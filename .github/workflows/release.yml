@@ -1,0 +1,98 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package and build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]" build
+
+      - name: Validate tag matches package version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          import core
+
+          tag = os.environ["RELEASE_TAG"]
+          version = tag.removeprefix("v")
+          if version != core.__version__:
+              raise SystemExit(
+                  f"Release tag {tag} does not match core.__version__ {core.__version__}"
+              )
+          print(f"Validated release {tag}")
+          PY
+
+      - name: Validate release changelog entry
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          version = os.environ["RELEASE_TAG"].removeprefix("v")
+          text = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          marker = f"## [{version}]"
+          if marker not in text:
+              raise SystemExit(f"Missing CHANGELOG.md entry for {version}")
+          print(f"Validated CHANGELOG.md entry for {version}")
+          PY
+
+      - name: Run verification suite
+        run: python scripts/verify_all.py
+
+      - name: Run tests
+        run: pytest tests/ -v
+
+      - name: Check publishable tree for private paths
+        run: |
+          ! grep -rn "C:\\Users\\|C:/Users/|/home/|KIO|kio" core/ tests/ scripts/ --include="*.py" -i
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Extract release notes
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          version = os.environ["RELEASE_TAG"].removeprefix("v")
+          lines = Path("CHANGELOG.md").read_text(encoding="utf-8").splitlines()
+          start = next(i for i, line in enumerate(lines) if line.startswith(f"## [{version}]"))
+          end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## [")), len(lines))
+          notes = "\n".join(lines[start:end]).strip() + "\n"
+          Path("release-notes.md").write_text(notes, encoding="utf-8")
+          PY
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            dist/*

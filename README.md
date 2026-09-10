@@ -2,6 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml"><img src="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/releases"><img src="https://img.shields.io/github/v/release/aspire488/Universal-Engineering-Augmentation" alt="Latest Release"></a>
   <img src="https://img.shields.io/badge/version-0.1.0-blue" alt="Version 0.1.0">
   <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+"></a>
   <img src="https://img.shields.io/github/license/aspire488/Universal-Engineering-Augmentation" alt="MIT License">
@@ -48,10 +49,10 @@ Coding Agent
 │ Router + Specialist Registry         │
 │ Code Intelligence                    │
 │ Impact / Dependency Analysis         │
-│ Candidate Engine + Worktrees        │
-│ Verification + Testing              │
-│ Formal / Specialized Engines        │
-│ Provenance + Event Log              │
+│ Candidate Engine + Worktrees         │
+│ Verification + Testing               │
+│ Formal / Specialized Engines         │
+│ Provenance + Event Log               │
 │ Analytics                            │
 └──────────────────────────────────────┘
         │
@@ -90,20 +91,13 @@ The augmentation layer can also be exposed through MCP, CLI/API, filesystem inte
 
 ## Installation
 
-### From source
-
 ```bash
 git clone https://github.com/aspire488/Universal-Engineering-Augmentation.git
 cd Universal-Engineering-Augmentation
 pip install -e ".[dev]"
 ```
 
-### Requirements
-
-- Python 3.10+
-- Git
-
-Optional capabilities such as Semgrep and mutmut can be installed separately when their execution environment is appropriate.
+Requirements: Python 3.10+ and Git.
 
 ## Quick start
 
@@ -119,14 +113,12 @@ report = run_verification(level="standard")
 
 ## Verification
 
-Run the repository verification suite:
-
 ```bash
 python scripts/verify_all.py
 pytest tests/ -v
 ```
 
-CI validates the package across Python 3.10, 3.11, and 3.12. Dependabot tracks Python and GitHub Actions dependencies weekly.
+CI validates Python 3.10, 3.11, and 3.12. Dependabot tracks Python and GitHub Actions dependencies weekly.
 
 ## Benchmarks
 
@@ -143,7 +135,7 @@ Current measurements demonstrate deterministic capability and latency on a real-
 
 **LLM token/call reduction:** not currently measured. The project does not claim token savings without instrumentation that can reproduce them.
 
-The reproducible benchmark harness is implemented in the repository and records machine-readable deterministic measurements while explicitly reporting unavailable host-agent telemetry.
+The reproducible benchmark harness records machine-readable deterministic measurements while explicitly reporting unavailable host-agent telemetry.
 
 ## Project maturity roadmap
 
@@ -156,16 +148,20 @@ The reproducible benchmark harness is implemented in the repository and records 
 - [x] Evidence provenance
 - [x] Reproducible public benchmark harness
 - [x] Dependency update automation
+- [x] Automated tagged release pipeline
 - [ ] First-class Claude Code adapter
 - [ ] First-class Codex adapter
 - [ ] Broader language grammars
-- [ ] Automated release pipeline
+
+## Release process
+
+Releases use `vX.Y.Z` tags. The release workflow verifies that the tag matches `core.__version__`, validates the corresponding `CHANGELOG.md` entry, runs verification and tests, builds distributions, and publishes GitHub release notes from the changelog.
+
+See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md) for the maintainer workflow.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding expectations, and how to add capabilities or adapters.
-
-Issues and pull requests are welcome, especially improvements that increase engineering capability without coupling the core to a single coding agent.
+Issues and pull requests are welcome, especially improvements that increase engineering capability without coupling the core to a single coding agent. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Security
 
