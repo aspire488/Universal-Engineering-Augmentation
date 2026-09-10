@@ -21,11 +21,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
+      - name: Install package
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
+          python -m pip install -e ".[dev]"
+
+      - name: Verify installed package
+        run: |
+          python -c "import core; assert core.__version__ == '0.1.0'; print(f'Universal Engineering Augmentation {core.__version__}')"
 
       - name: Run verification suite
         run: python scripts/verify_all.py
