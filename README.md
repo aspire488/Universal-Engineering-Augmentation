@@ -1,5 +1,7 @@
 # Universal Engineering Augmentation
 
+**Status:** Early public release / v0.1.0
+
 A tool-agnostic engineering augmentation layer for coding agents.
 
 ## What it is
@@ -62,42 +64,69 @@ Deterministic systems handle repeatable engineering operations.
 | `event_log` | Structured SQLite event recording with metadata |
 | `analytics` | DuckDB-powered SQL analytics over event data |
 | `project_detector` | Detect project type and load appropriate capability profile |
+| `specialist_registry` | Registry for domain specialist configurations |
+| `specialist_router` | Deterministic-first task routing to specialists |
+| `scoring` | Multi-dimension deterministic scoring engine |
+| `provenance` | Audit trail and evidence chain tracking |
+| `scale_decision` | Task scale and complexity classification |
 
-## Current Integrations
+## Agent-Neutral Design
 
-The architecture is agent-neutral. OpenCode is the first/reference integration.
+The core architecture is agent-neutral. No core module requires any specific coding agent.
 
-**Agent adapters** (planned):
-- OpenCode (reference implementation)
+**Current integrations:**
+- OpenCode — reference adapter (first integration)
+
+**Planned adapters:**
 - Claude Code
 - Codex
 - Other agents via simple adapter interface
 
-**MCP servers** (compatible):
+**MCP compatibility:**
 - Any MCP-compatible server can be used alongside the augmentation layer
 
 ## Installation
 
 ```bash
-# Clone
-git clone <repo-url> Universal-Engineering-Augmentation
+git clone https://github.com/aspire488/Universal-Engineering-Augmentation.git
 cd Universal-Engineering-Augmentation
-
-# Install Python dependencies
-pip install tree-sitter tree-sitter-python hypothesis z3-solver duckdb mutmut
-
-# Verify
-python scripts/verify_all.py
+pip install -r requirements.txt
 ```
 
 **Requirements:**
 - Python 3.10+
 - Git
-- Node.js (for MCP servers, optional)
 
 **Optional:**
-- `semgrep` — for static analysis verification tier
 - `mutmut` — for mutation testing (requires WSL on Windows)
+- `semgrep` — for static analysis verification tier
+
+## Quick Start
+
+```python
+from core.tree_sitter_engine import parse_file
+from core.impact_model import build_import_graph
+from core.verification import run_verification
+
+# Parse a Python file
+result = parse_file("my_script.py")
+
+# Build import graph
+graph = build_import_graph("src/")
+
+# Run tiered verification
+report = run_verification(level="standard")
+```
+
+## Verification
+
+Run the complete verification suite:
+
+```bash
+python scripts/verify_all.py
+```
+
+This runs 16 checks across all augmentation modules.
 
 ## Examples
 
@@ -110,34 +139,6 @@ See `examples/live/` for demonstration artifacts:
 | `event_log_sample.json` | Structured event recording to SQLite |
 | `verification_result.json` | Tiered verification output |
 | `tool_timing.json` | Performance measurements |
-
-Each artifact includes WHAT was measured, HOW, and the ACTUAL RESULT.
-
-## Verification
-
-Run the complete verification suite:
-
-```bash
-python scripts/verify_all.py
-```
-
-This runs 16 checks across all augmentation modules:
-- Database connectivity
-- Event logging
-- Task logging
-- Verification engine
-- Project detection
-- Skill registration
-- Worktree listing
-- Candidate logging
-- Project statistics
-- Tree-sitter parsing
-- Tree-sitter symbol lookup
-- Property testing
-- Mutation testing
-- Z3 SAT solving
-- Z3 pre/post verification
-- DuckDB analytics
 
 ## Benchmarks
 
@@ -161,11 +162,12 @@ Performance measurements on a real-world Python codebase (30+ subdirectories):
 - Generated/runtime artifacts (SQLite databases, worktrees) are ignored
 - Event logs store metadata only — no source code or secrets
 
+See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
 ## Limitations
 
 - **semgrep** — not installed by default; static analysis tier unavailable without it
 - **mutmut** — requires WSL on Windows; mutation testing limited on native Windows
-- **OpenCode telemetry** — token/call measurement depends on agent implementation; not all agents expose this data
 - **Language support** — tree-sitter modules bundled for Python, JavaScript, TypeScript, JSON; other languages require additional tree-sitter grammars
 
 ## Roadmap
@@ -175,6 +177,10 @@ Performance measurements on a real-world Python codebase (30+ subdirectories):
 - CI/CD integration for automated verification
 - Web dashboard for analytics visualization
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding expectations, and how to add capabilities or agent adapters.
+
 ## License
 
-[License to be determined]
+MIT — see [LICENSE](LICENSE).
