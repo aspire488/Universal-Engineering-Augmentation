@@ -1,151 +1,139 @@
 # Universal Engineering Augmentation
 
-**Status:** Early public release / v0.1.0
+<p align="center">
+  <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml"><img src="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/version-0.1.0-blue" alt="Version 0.1.0">
+  <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+"></a>
+  <img src="https://img.shields.io/github/license/aspire488/Universal-Engineering-Augmentation" alt="MIT License">
+  <img src="https://img.shields.io/github/issues/aspire488/Universal-Engineering-Augmentation" alt="Issues">
+  <img src="https://img.shields.io/github/issues-pr/aspire488/Universal-Engineering-Augmentation" alt="Pull Requests">
+</p>
 
-A tool-agnostic engineering augmentation layer for coding agents.
+**Status:** Public alpha · v0.1.0
 
-## What it is
+A **tool-agnostic engineering augmentation layer for coding agents**. It moves repeatable software-engineering work from probabilistic LLM reasoning into deterministic analysis, testing, verification, routing, and evidence systems.
 
-A deterministic/specialized capability layer that coding agents can use alongside LLM reasoning. Coding agents should not use an LLM for work that can be performed deterministically.
+## Why this exists
 
-## Why
+Coding agents are strongest when they reason about novel problems. They are a poor place to repeatedly re-derive facts that deterministic tools can establish faster and more reliably.
 
-LLMs are powerful but expensive and non-deterministic for tasks that have known algorithms. This layer provides:
+Universal Engineering Augmentation provides reusable engineering capabilities that can sit beside **OpenCode, Claude Code, Codex, or other coding agents** without making the core dependent on any one agent.
 
-- **Structural code analysis** — parse any language via tree-sitter, extract functions/classes/imports without LLM guessing
-- **Symbol and import analysis** — trace call graphs, find dependencies, map impact
-- **Property testing** — generate edge cases via Hypothesis without LLM reasoning
-- **Mutation testing** — verify test quality by injecting faults
-- **Formal constraints** — SAT/SMT solving for pre/post conditions via Z3
-- **Verification** — tiered verification (minimal → full) with deterministic checks
-- **Impact analysis** — blast radius computation before any code change
-- **Candidate isolation** — git worktree-based experiment branching
-- **Event logging** — structured SQLite/DuckDB event recording for observability
-- **Analytics** — SQL-queryable metrics on engineering activity
+## Core capabilities
+
+- **Structural code analysis** — tree-sitter parsing and symbol extraction
+- **Dependency & impact analysis** — import graphs, symbol impact, blast radius
+- **Tiered verification** — minimal → standard → strict → security → full
+- **Property testing** — Hypothesis-driven edge-case exploration
+- **Mutation testing** — measure whether tests actually detect faults
+- **Formal verification** — SAT/SMT constraints with Z3
+- **Candidate isolation** — Git worktrees for parallel implementations
+- **Specialist routing** — deterministic-first task routing
+- **Deterministic scoring** — repeatable candidate/evidence evaluation
+- **Provenance** — evidence lineage and audit trails
+- **Event logging** — structured SQLite records
+- **Analytics** — DuckDB queries over engineering events
+- **Project detection** — select capability profiles from repository structure
 
 ## Architecture
 
-```
-Agent (OpenCode / Claude Code / Codex / other)
-  │
-  ▼
-Augmentation Layer
-  ├── Code Intelligence (tree-sitter, impact model)
-  ├── Verification (tiered checks, regression detection)
-  ├── Testing (property, mutation, formal)
-  ├── Candidate Engine (propose, evaluate, select)
-  ├── Worktree Isolation (git worktree per candidate)
-  ├── Event Log (SQLite structured recording)
-  └── Analytics (DuckDB SQL queries)
+```text
+Coding Agent
+(OpenCode / Claude Code / Codex / other)
+        │
+        ▼
+┌──────────────────────────────────────┐
+│ Universal Engineering Augmentation   │
+├──────────────────────────────────────┤
+│ Router + Specialist Registry         │
+│ Code Intelligence                    │
+│ Impact / Dependency Analysis         │
+│ Candidate Engine + Worktrees        │
+│ Verification + Testing              │
+│ Formal / Specialized Engines        │
+│ Provenance + Event Log              │
+│ Analytics                            │
+└──────────────────────────────────────┘
+        │
+        ▼
+Evidence → Candidate → Verification → Result
 ```
 
-The LLM remains responsible for:
+### What stays with the LLM
+
 - Strategy and architecture decisions
 - Ambiguity resolution
 - Novel reasoning
 - Candidate generation
-- Judgment calls
+- Judgment calls where deterministic evidence is insufficient
 
-Deterministic systems handle repeatable engineering operations.
+### What should be deterministic
 
-## Capabilities
+- Structural facts
+- Dependency relationships
+- Repeatable validation
+- Property exploration
+- Constraint checking
+- Test-quality measurement
+- Evidence recording
+- Routing where rules are sufficient
 
-| Module | What it does |
-|--------|-------------|
-| `tree_sitter_engine` | Parse Python/JS/TS/JSON via tree-sitter, extract functions/classes/imports/symbols |
-| `impact_model` | Build import graphs, trace function calls, compute blast radius |
-| `symbol_impact` | Cross-file symbol impact analysis, hub detection, test coverage mapping |
-| `verification` | Tiered verification (minimal/standard/strict/security/full) |
-| `property_testing` | Hypothesis-based property testing with configurable strategies |
-| `mutation_testing` | Fault injection and test quality measurement |
-| `sat_engine` | Z3-based SAT/SMT solving for formal constraints |
-| `candidate_engine` | Multi-approach candidate proposal and evaluation |
-| `worktree_engine` | Git worktree creation, isolation, diff, and merge |
-| `event_log` | Structured SQLite event recording with metadata |
-| `analytics` | DuckDB-powered SQL analytics over event data |
-| `project_detector` | Detect project type and load appropriate capability profile |
-| `specialist_registry` | Registry for domain specialist configurations |
-| `specialist_router` | Deterministic-first task routing to specialists |
-| `scoring` | Multi-dimension deterministic scoring engine |
-| `provenance` | Audit trail and evidence chain tracking |
-| `scale_decision` | Task scale and complexity classification |
+## Agent-neutral design
 
-## Agent-Neutral Design
+The core package contains no dependency on a specific coding agent.
 
-The core architecture is agent-neutral. No core module requires any specific coding agent.
+**Reference integration:** OpenCode
 
-**Current integrations:**
-- OpenCode — reference adapter (first integration)
+**Planned first-class adapters:** Claude Code · Codex
 
-**Planned adapters:**
-- Claude Code
-- Codex
-- Other agents via simple adapter interface
-
-**MCP compatibility:**
-- Any MCP-compatible server can be used alongside the augmentation layer
+The augmentation layer can also be exposed through MCP, CLI/API, filesystem interfaces, or other adapter mechanisms.
 
 ## Installation
+
+### From source
 
 ```bash
 git clone https://github.com/aspire488/Universal-Engineering-Augmentation.git
 cd Universal-Engineering-Augmentation
-pip install -r requirements.txt
+pip install -e ".[dev]"
 ```
 
-**Requirements:**
+### Requirements
+
 - Python 3.10+
 - Git
 
-**Optional:**
-- `mutmut` — for mutation testing (requires WSL on Windows)
-- `semgrep` — for static analysis verification tier
+Optional capabilities such as Semgrep and mutmut can be installed separately when their execution environment is appropriate.
 
-## Quick Start
+## Quick start
 
 ```python
 from core.tree_sitter_engine import parse_file
 from core.impact_model import build_import_graph
 from core.verification import run_verification
 
-# Parse a Python file
 result = parse_file("my_script.py")
-
-# Build import graph
 graph = build_import_graph("src/")
-
-# Run tiered verification
 report = run_verification(level="standard")
 ```
 
 ## Verification
 
-Run the complete verification suite:
+Run the repository verification suite:
 
 ```bash
 python scripts/verify_all.py
+pytest tests/ -v
 ```
 
-This runs 16 checks across all augmentation modules.
-
-## Examples
-
-See `examples/live/` for demonstration artifacts:
-
-| File | What it shows |
-|------|---------------|
-| `tree_sitter_output.json` | AST analysis of Python files — functions, classes, imports extracted |
-| `impact_analysis.json` | Import graph and file-level impact analysis |
-| `event_log_sample.json` | Structured event recording to SQLite |
-| `verification_result.json` | Tiered verification output |
-| `tool_timing.json` | Performance measurements |
+CI validates the package across Python 3.10, 3.11, and 3.12.
 
 ## Benchmarks
 
-Performance measurements on a real-world Python codebase (30+ subdirectories):
+Current measurements demonstrate deterministic capability and latency on a real-world Python codebase:
 
 | Operation | Time |
-|-----------|------|
+|---|---:|
 | Tree-sitter parse (10 files) | 176ms |
 | Impact analysis (1 file) | 24ms |
 | Event log (1 event) | 16ms |
@@ -153,33 +141,36 @@ Performance measurements on a real-world Python codebase (30+ subdirectories):
 | Property test | 253ms |
 | DuckDB query | 77ms |
 
-**LLM token reduction:** Not measurable. The augmentation layer provides capabilities that LLMs cannot perform deterministically, rather than replacing LLM calls. Token savings are not the value proposition — capability expansion is.
+**LLM token/call reduction:** not currently measured. The project does not claim token savings without instrumentation that can reproduce them.
 
-## Security
+## Project maturity roadmap
 
-- No secrets or credentials are stored in the augmentation layer
-- Private project configuration is excluded via `.gitignore`
-- Generated/runtime artifacts (SQLite databases, worktrees) are ignored
-- Event logs store metadata only — no source code or secrets
-
-See [SECURITY.md](SECURITY.md) for vulnerability reporting.
-
-## Limitations
-
-- **semgrep** — not installed by default; static analysis tier unavailable without it
-- **mutmut** — requires WSL on Windows; mutation testing limited on native Windows
-- **Language support** — tree-sitter modules bundled for Python, JavaScript, TypeScript, JSON; other languages require additional tree-sitter grammars
-
-## Roadmap
-
-- Agent adapter interface for Claude Code, Codex integration
-- Additional tree-sitter grammars (Rust, Go, Java)
-- CI/CD integration for automated verification
-- Web dashboard for analytics visualization
+- [x] Canonical Python packaging
+- [x] Multi-version CI
+- [x] Unit and integration tests
+- [x] Security and contribution documentation
+- [x] Agent-neutral core boundary
+- [x] Deterministic specialist routing
+- [x] Evidence provenance
+- [ ] First-class Claude Code adapter
+- [ ] First-class Codex adapter
+- [ ] Reproducible public benchmark harness
+- [ ] Broader language grammars
+- [ ] Automated release pipeline
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding expectations, and how to add capabilities or agent adapters.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding expectations, and how to add capabilities or adapters.
+
+Issues and pull requests are welcome, especially improvements that increase engineering capability without coupling the core to a single coding agent.
+
+## Security
+
+- No secrets or credentials are stored in the repository
+- Runtime databases and worktrees are excluded from version control
+- Event logs are metadata-oriented and should not contain secrets
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 ## License
 
