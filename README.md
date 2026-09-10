@@ -35,6 +35,8 @@ Universal Engineering Augmentation provides reusable engineering capabilities th
 - **Event logging** — structured SQLite records
 - **Analytics** — DuckDB queries over engineering events
 - **Project detection** — select capability profiles from repository structure
+- **Agent adapters** — Claude Code and Codex integration surfaces
+- **Stable CLI** — `uea-verify` JSON evidence interface
 
 ## Architecture
 
@@ -85,9 +87,11 @@ The core package contains no dependency on a specific coding agent.
 
 **Reference integration:** OpenCode
 
-**Planned first-class adapters:** Claude Code · Codex
+**First-class integration surfaces:** Claude Code · Codex · generic CLI
 
-The augmentation layer can also be exposed through MCP, CLI/API, filesystem interfaces, or other adapter mechanisms.
+Adapters live outside `core/`. They translate host-agent lifecycle/configuration into deterministic UEA calls and structured evidence.
+
+See [`docs/ADAPTER_INTEGRATION.md`](docs/ADAPTER_INTEGRATION.md) and [`docs/ADAPTER_CLI_GUIDE.md`](docs/ADAPTER_CLI_GUIDE.md).
 
 ## Installation
 
@@ -108,7 +112,13 @@ from core.verification import run_verification
 
 result = parse_file("my_script.py")
 graph = build_import_graph("src/")
-report = run_verification(level="standard")
+report = run_verification(".", level="standard")
+```
+
+For agent integrations or CI, use the stable JSON CLI:
+
+```bash
+uea-verify . --level standard
 ```
 
 ## Verification
@@ -149,9 +159,11 @@ The reproducible benchmark harness records machine-readable deterministic measur
 - [x] Reproducible public benchmark harness
 - [x] Dependency update automation
 - [x] Automated tagged release pipeline
-- [ ] First-class Claude Code adapter
-- [ ] First-class Codex adapter
+- [x] Claude Code adapter
+- [x] Codex adapter
+- [x] Stable JSON verification CLI
 - [ ] Broader language grammars
+- [ ] External open-source contribution track
 
 ## Release process
 
