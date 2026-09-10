@@ -126,7 +126,7 @@ python scripts/verify_all.py
 pytest tests/ -v
 ```
 
-CI validates the package across Python 3.10, 3.11, and 3.12.
+CI validates the package across Python 3.10, 3.11, and 3.12. Dependabot tracks Python and GitHub Actions dependencies weekly.
 
 ## Benchmarks
 
@@ -143,6 +143,8 @@ Current measurements demonstrate deterministic capability and latency on a real-
 
 **LLM token/call reduction:** not currently measured. The project does not claim token savings without instrumentation that can reproduce them.
 
+The reproducible benchmark harness is implemented in the repository and records machine-readable deterministic measurements while explicitly reporting unavailable host-agent telemetry.
+
 ## Project maturity roadmap
 
 - [x] Canonical Python packaging
@@ -152,9 +154,10 @@ Current measurements demonstrate deterministic capability and latency on a real-
 - [x] Agent-neutral core boundary
 - [x] Deterministic specialist routing
 - [x] Evidence provenance
+- [x] Reproducible public benchmark harness
+- [x] Dependency update automation
 - [ ] First-class Claude Code adapter
 - [ ] First-class Codex adapter
-- [ ] Reproducible public benchmark harness
 - [ ] Broader language grammars
 - [ ] Automated release pipeline
 
