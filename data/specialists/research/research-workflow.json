@@ -1,0 +1,24 @@
+{
+  "name": "research-workflow",
+  "domain": "research",
+  "capabilities": [
+    "analyze",
+    "document"
+  ],
+  "description": "Clean-room discovery before generating solutions. Gather evidence, then reason.",
+  "source": "Feynman research workflow pattern",
+  "license": "MIT",
+  "version": "1.0.0",
+  "deterministic_evidence_required": true,
+  "verification_level": "standard",
+  "excluded_from": [],
+  "tags": [
+    "research",
+    "discovery",
+    "evidence-first"
+  ],
+  "file_hash": "15fcfb38defb9b86",
+  "harness_format": "universal",
+  "skill_file": "skills/research-workflow/SKILL.md",
+  "enabled": true
+}

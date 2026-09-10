@@ -1,0 +1,24 @@
+{
+  "name": "systematic-debugging",
+  "domain": "debugging",
+  "capabilities": [
+    "debug",
+    "analyze"
+  ],
+  "description": "Reproduce \u2192 hypothesize \u2192 test \u2192 fix. Never guess. Always verify root cause before fixing.",
+  "source": "100x-agent-toolkit (adapted)",
+  "license": "MIT",
+  "version": "1.0.0",
+  "deterministic_evidence_required": true,
+  "verification_level": "strict",
+  "excluded_from": [],
+  "tags": [
+    "debugging",
+    "root-cause",
+    "systematic"
+  ],
+  "file_hash": "d4dae958eedd0a23",
+  "harness_format": "universal",
+  "skill_file": "skills/systematic-debugging/SKILL.md",
+  "enabled": true
+}

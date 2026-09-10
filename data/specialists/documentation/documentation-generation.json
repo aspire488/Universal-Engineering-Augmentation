@@ -1,0 +1,24 @@
+{
+  "name": "documentation-generation",
+  "domain": "documentation",
+  "capabilities": [
+    "generate",
+    "document"
+  ],
+  "description": "Generate docs from code structure. API references, README, architecture docs.",
+  "source": "100x-agent-toolkit (adapted)",
+  "license": "MIT",
+  "version": "1.0.0",
+  "deterministic_evidence_required": false,
+  "verification_level": "minimal",
+  "excluded_from": [],
+  "tags": [
+    "documentation",
+    "api-docs",
+    "readme"
+  ],
+  "file_hash": "e7cef525ca4c2cc5",
+  "harness_format": "universal",
+  "skill_file": null,
+  "enabled": true
+}

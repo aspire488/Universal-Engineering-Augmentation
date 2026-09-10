@@ -1,0 +1,24 @@
+{
+  "name": "security-audit",
+  "domain": "security",
+  "capabilities": [
+    "verify",
+    "analyze"
+  ],
+  "description": "Threat modeling, taint analysis, dependency audit. Security-first review.",
+  "source": "wshobson/agents (normalized)",
+  "license": "MIT",
+  "version": "1.0.0",
+  "deterministic_evidence_required": true,
+  "verification_level": "security",
+  "excluded_from": [],
+  "tags": [
+    "security",
+    "audit",
+    "taint"
+  ],
+  "file_hash": "1517524382b74ca0",
+  "harness_format": "universal",
+  "skill_file": null,
+  "enabled": true
+}

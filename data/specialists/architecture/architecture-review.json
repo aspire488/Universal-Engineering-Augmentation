@@ -1,0 +1,24 @@
+{
+  "name": "architecture-review",
+  "domain": "architecture",
+  "capabilities": [
+    "review",
+    "analyze"
+  ],
+  "description": "Dependency analysis, boundary detection, coupling metrics. Architectural fitness.",
+  "source": "wshobson/agents (normalized)",
+  "license": "MIT",
+  "version": "1.0.0",
+  "deterministic_evidence_required": true,
+  "verification_level": "strict",
+  "excluded_from": [],
+  "tags": [
+    "architecture",
+    "coupling",
+    "boundaries"
+  ],
+  "file_hash": "6f05c6475864fcde",
+  "harness_format": "universal",
+  "skill_file": null,
+  "enabled": true
+}

@@ -1,0 +1,242 @@
+{
+  "debugging:systematic-debugging": {
+    "name": "systematic-debugging",
+    "domain": "debugging",
+    "capabilities": [
+      "debug",
+      "analyze"
+    ],
+    "description": "Reproduce \u2192 hypothesize \u2192 test \u2192 fix. Never guess. Always verify root cause before fixing.",
+    "source": "100x-agent-toolkit (adapted)",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "strict",
+    "excluded_from": [],
+    "tags": [
+      "debugging",
+      "root-cause",
+      "systematic"
+    ],
+    "file_hash": "d4dae958eedd0a23",
+    "harness_format": "universal",
+    "skill_file": "skills/systematic-debugging/SKILL.md",
+    "enabled": true
+  },
+  "code_quality:verification-before-completion": {
+    "name": "verification-before-completion",
+    "domain": "code_quality",
+    "capabilities": [
+      "verify",
+      "review"
+    ],
+    "description": "Run all verification tiers before declaring done. No silent failures.",
+    "source": "Feynman principles + verification patterns",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "full",
+    "excluded_from": [],
+    "tags": [
+      "verification",
+      "quality",
+      "pre-commit"
+    ],
+    "file_hash": "36a15f318666628c",
+    "harness_format": "universal",
+    "skill_file": "skills/verification-before-completion/SKILL.md",
+    "enabled": true
+  },
+  "research:research-workflow": {
+    "name": "research-workflow",
+    "domain": "research",
+    "capabilities": [
+      "analyze",
+      "document"
+    ],
+    "description": "Clean-room discovery before generating solutions. Gather evidence, then reason.",
+    "source": "Feynman research workflow pattern",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "standard",
+    "excluded_from": [],
+    "tags": [
+      "research",
+      "discovery",
+      "evidence-first"
+    ],
+    "file_hash": "15fcfb38defb9b86",
+    "harness_format": "universal",
+    "skill_file": "skills/research-workflow/SKILL.md",
+    "enabled": true
+  },
+  "security:security-audit": {
+    "name": "security-audit",
+    "domain": "security",
+    "capabilities": [
+      "verify",
+      "analyze"
+    ],
+    "description": "Threat modeling, taint analysis, dependency audit. Security-first review.",
+    "source": "wshobson/agents (normalized)",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "security",
+    "excluded_from": [],
+    "tags": [
+      "security",
+      "audit",
+      "taint"
+    ],
+    "file_hash": "1517524382b74ca0",
+    "harness_format": "universal",
+    "skill_file": null,
+    "enabled": true
+  },
+  "architecture:architecture-review": {
+    "name": "architecture-review",
+    "domain": "architecture",
+    "capabilities": [
+      "review",
+      "analyze"
+    ],
+    "description": "Dependency analysis, boundary detection, coupling metrics. Architectural fitness.",
+    "source": "wshobson/agents (normalized)",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "strict",
+    "excluded_from": [],
+    "tags": [
+      "architecture",
+      "coupling",
+      "boundaries"
+    ],
+    "file_hash": "6f05c6475864fcde",
+    "harness_format": "universal",
+    "skill_file": null,
+    "enabled": true
+  },
+  "performance:performance-analysis": {
+    "name": "performance-analysis",
+    "domain": "performance",
+    "capabilities": [
+      "analyze",
+      "optimize"
+    ],
+    "description": "Profile, measure, optimize. Never optimize without data.",
+    "source": "100x-agent-toolkit (adapted)",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "standard",
+    "excluded_from": [],
+    "tags": [
+      "performance",
+      "profiling",
+      "optimization"
+    ],
+    "file_hash": "e7e39c900753c0b7",
+    "harness_format": "universal",
+    "skill_file": null,
+    "enabled": true
+  },
+  "testing:test-generation": {
+    "name": "test-generation",
+    "domain": "testing",
+    "capabilities": [
+      "generate",
+      "verify"
+    ],
+    "description": "Generate tests from code structure. Property-based, mutation-aware.",
+    "source": "Built-in",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "standard",
+    "excluded_from": [],
+    "tags": [
+      "testing",
+      "property-based",
+      "mutation"
+    ],
+    "file_hash": "c61ab4c1cdef28c7",
+    "harness_format": "universal",
+    "skill_file": null,
+    "enabled": true
+  },
+  "code_quality:code-review": {
+    "name": "code-review",
+    "domain": "code_quality",
+    "capabilities": [
+      "review",
+      "analyze"
+    ],
+    "description": "Structural review: complexity, duplication, naming, dead code. Evidence-based.",
+    "source": "wshobson/agents (normalized)",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "standard",
+    "excluded_from": [],
+    "tags": [
+      "review",
+      "quality",
+      "complexity"
+    ],
+    "file_hash": "c6f2aa238e1904bd",
+    "harness_format": "universal",
+    "skill_file": null,
+    "enabled": true
+  },
+  "deployment:deployment-analysis": {
+    "name": "deployment-analysis",
+    "domain": "deployment",
+    "capabilities": [
+      "analyze",
+      "review"
+    ],
+    "description": "Scale decision logic: small\u2192direct, medium\u2192specialist, large\u2192decompose, complex\u2192parallel.",
+    "source": "Feynman scale decision pattern",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": true,
+    "verification_level": "standard",
+    "excluded_from": [],
+    "tags": [
+      "deployment",
+      "scale",
+      "infrastructure"
+    ],
+    "file_hash": "179bbf337aca6a93",
+    "harness_format": "universal",
+    "skill_file": null,
+    "enabled": true
+  },
+  "documentation:documentation-generation": {
+    "name": "documentation-generation",
+    "domain": "documentation",
+    "capabilities": [
+      "generate",
+      "document"
+    ],
+    "description": "Generate docs from code structure. API references, README, architecture docs.",
+    "source": "100x-agent-toolkit (adapted)",
+    "license": "MIT",
+    "version": "1.0.0",
+    "deterministic_evidence_required": false,
+    "verification_level": "minimal",
+    "excluded_from": [],
+    "tags": [
+      "documentation",
+      "api-docs",
+      "readme"
+    ],
+    "file_hash": "e7cef525ca4c2cc5",
+    "harness_format": "universal",
+    "skill_file": null,
+    "enabled": true
+  }
+}

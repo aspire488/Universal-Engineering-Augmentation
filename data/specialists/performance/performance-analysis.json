@@ -1,0 +1,24 @@
+{
+  "name": "performance-analysis",
+  "domain": "performance",
+  "capabilities": [
+    "analyze",
+    "optimize"
+  ],
+  "description": "Profile, measure, optimize. Never optimize without data.",
+  "source": "100x-agent-toolkit (adapted)",
+  "license": "MIT",
+  "version": "1.0.0",
+  "deterministic_evidence_required": true,
+  "verification_level": "standard",
+  "excluded_from": [],
+  "tags": [
+    "performance",
+    "profiling",
+    "optimization"
+  ],
+  "file_hash": "e7e39c900753c0b7",
+  "harness_format": "universal",
+  "skill_file": null,
+  "enabled": true
+}

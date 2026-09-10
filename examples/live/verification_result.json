@@ -1,0 +1,1 @@
+{"tier": "minimal", "passed": 1, "failed": 0, "checks": [{"name": "syntax_check", "status": "passed", "duration_ms": 12}]}

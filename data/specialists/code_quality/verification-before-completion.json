@@ -1,0 +1,24 @@
+{
+  "name": "verification-before-completion",
+  "domain": "code_quality",
+  "capabilities": [
+    "verify",
+    "review"
+  ],
+  "description": "Run all verification tiers before declaring done. No silent failures.",
+  "source": "Feynman principles + verification patterns",
+  "license": "MIT",
+  "version": "1.0.0",
+  "deterministic_evidence_required": true,
+  "verification_level": "full",
+  "excluded_from": [],
+  "tags": [
+    "verification",
+    "quality",
+    "pre-commit"
+  ],
+  "file_hash": "36a15f318666628c",
+  "harness_format": "universal",
+  "skill_file": "skills/verification-before-completion/SKILL.md",
+  "enabled": true
+}

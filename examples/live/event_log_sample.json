@@ -1,0 +1,7 @@
+{
+  "events": [
+    {"id": 1, "type": "task_start", "project": "demo-project", "detail": "Started code review"},
+    {"id": 2, "type": "verification_run", "project": "demo-project", "detail": "Standard tier: 16 checks"},
+    {"id": 3, "type": "task_complete", "project": "demo-project", "detail": "Review complete, 0 issues"}
+  ]
+}

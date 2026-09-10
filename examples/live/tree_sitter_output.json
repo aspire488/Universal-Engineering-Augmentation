@@ -1,0 +1,56 @@
+[
+  {
+    "file": "sample_project/app.py",
+    "language": "python",
+    "node_count": 2045,
+    "function_count": 12,
+    "class_count": 3,
+    "import_count": 8,
+    "functions": [
+      {"name": "handle_request", "line": 15},
+      {"name": "process_data", "line": 42},
+      {"name": "validate_input", "line": 68},
+      {"name": "format_response", "line": 89},
+      {"name": "connect_database", "line": 112}
+    ],
+    "imports": [
+      {"text": "import os, sys, json", "line": 1},
+      {"text": "from pathlib import Path", "line": 2},
+      {"text": "from typing import Dict, List", "line": 3}
+    ]
+  },
+  {
+    "file": "sample_project/utils.py",
+    "language": "python",
+    "node_count": 1523,
+    "function_count": 8,
+    "class_count": 1,
+    "import_count": 5,
+    "functions": [
+      {"name": "parse_config", "line": 10},
+      {"name": "setup_logging", "line": 34},
+      {"name": "retry_on_failure", "line": 56}
+    ],
+    "imports": [
+      {"text": "import logging", "line": 1},
+      {"text": "from dataclasses import dataclass", "line": 2}
+    ]
+  },
+  {
+    "file": "sample_project/models.py",
+    "language": "python",
+    "node_count": 3102,
+    "function_count": 15,
+    "class_count": 5,
+    "import_count": 12,
+    "functions": [
+      {"name": "create_user", "line": 20},
+      {"name": "validate_email", "line": 45},
+      {"name": "hash_password", "line": 67}
+    ],
+    "imports": [
+      {"text": "from datetime import datetime", "line": 1},
+      {"text": "import hashlib", "line": 2}
+    ]
+  }
+]

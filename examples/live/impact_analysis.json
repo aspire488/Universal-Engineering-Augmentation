@@ -1,0 +1,23 @@
+{
+  "file_impacts": [
+    {
+      "file": "sample_project/app.py",
+      "imports": ["os", "sys", "json", "pathlib", "sample_project.utils", "sample_project.models"],
+      "calls": ["handle_request", "process_data", "validate_input", "format_response", "connect_database", "parse_config"],
+      "emitters": []
+    },
+    {
+      "file": "sample_project/utils.py",
+      "imports": ["logging", "dataclasses", "typing", "pathlib"],
+      "calls": ["parse_config", "setup_logging", "retry_on_failure"],
+      "emitters": []
+    }
+  ],
+  "import_graph": [
+    {"from": "sample_project.app", "to": "sample_project.utils"},
+    {"from": "sample_project.app", "to": "sample_project.models"},
+    {"from": "sample_project.utils", "to": "logging"},
+    {"from": "sample_project.models", "to": "datetime"},
+    {"from": "sample_project.models", "to": "hashlib"}
+  ]
+}

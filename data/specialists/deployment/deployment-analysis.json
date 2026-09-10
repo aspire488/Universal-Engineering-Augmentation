@@ -1,0 +1,24 @@
+{
+  "name": "deployment-analysis",
+  "domain": "deployment",
+  "capabilities": [
+    "analyze",
+    "review"
+  ],
+  "description": "Scale decision logic: small\u2192direct, medium\u2192specialist, large\u2192decompose, complex\u2192parallel.",
+  "source": "Feynman scale decision pattern",
+  "license": "MIT",
+  "version": "1.0.0",
+  "deterministic_evidence_required": true,
+  "verification_level": "standard",
+  "excluded_from": [],
+  "tags": [
+    "deployment",
+    "scale",
+    "infrastructure"
+  ],
+  "file_hash": "179bbf337aca6a93",
+  "harness_format": "universal",
+  "skill_file": null,
+  "enabled": true
+}

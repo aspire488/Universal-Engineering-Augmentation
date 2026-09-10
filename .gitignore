@@ -1,0 +1,78 @@
+# KIO-specific files (private, not for publication)
+scripts/kio_verify.py
+scripts/test_treesitter.py
+scripts/test_treesitter2.py
+profiles/kio/
+
+# KIO-contaminated docs (rewrite before publish)
+STATUS.md
+docs/STATUS.md
+docs/KIO_BENCHMARK_TASKS.md
+docs/KIO_BENCHMARK_RESULTS.md
+docs/PROJECT_FREEZE.md
+docs/FINAL_KIO_LIVE_VALIDATION.md
+docs/LIVE_KIO_ENVIRONMENT.md
+
+# Internal inventory docs (contain personal paths, mark KIO boundary)
+docs/GLOBAL_AGENT_INVENTORY.md
+docs/GLOBAL_CAPABILITY_GRAPH.md
+docs/GLOBAL_MCP_INVENTORY.md
+docs/GLOBAL_PLUGIN_INVENTORY.md
+docs/GLOBAL_SKILL_INVENTORY.md
+docs/GLOBAL_STACK_COMPLETE_INVENTORY.md
+docs/GLOBAL_TOOL_INVENTORY.md
+docs/GLOBAL_LSP_INVENTORY.md
+docs/EXTERNAL_ARCHITECTURE_VALIDATION.md
+docs/EXTERNAL_STACK_MANIFEST.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Hypothesis testing cache
+.hypothesis/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# SQLite databases (regenerated at runtime)
+data/sqlite/*.db
+
+# Worktrees (runtime artifacts)
+data/worktrees/
+worktrees/
+
+# Temporary test artifacts (validation scripts)
+tests/_phase*.py
+tests/_check_release_docs.py
+tests/_final_regression.py
+tests/_final_secret_scan.py
+tests/_release_boundary.py
+
+# Logs
+*.log
+
+# Augmentation database (runtime data, not source)
+data/sqlite/augmentation.db
+data/sqlite/augmentation.db-wal
+data/sqlite/augmentation.db-shm

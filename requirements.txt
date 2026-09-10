@@ -1,0 +1,20 @@
+# Universal Engineering Augmentation — Runtime Dependencies
+# Only packages required by core/ modules
+
+# Tree-sitter parsing engine
+tree-sitter==0.26.0
+
+# Tree-sitter language grammars
+tree-sitter-python==0.25.0
+tree-sitter-javascript==0.25.0
+tree-sitter-typescript==0.23.2
+tree-sitter-json==0.24.8
+
+# Property-based testing
+hypothesis==6.167.1
+
+# SAT/SMT constraint solving
+z3-solver==5.1.0.0
+
+# Analytics database
+duckdb==1.5.5
