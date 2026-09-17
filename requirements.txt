@@ -11,7 +11,7 @@ tree-sitter-typescript==0.23.2
 tree-sitter-json==0.24.8
 
 # Property-based testing
-hypothesis==6.167.1
+hypothesis==6.168.0
 
 # SAT/SMT constraint solving
 z3-solver==5.1.0.0
