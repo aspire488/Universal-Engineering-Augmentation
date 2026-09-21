@@ -38,6 +38,29 @@ Universal Engineering Augmentation provides reusable engineering capabilities th
 
 ## Architecture
 
+
+### Deterministic engineering pipeline
+
+```mermaid
+flowchart LR
+    A[Coding Agent] --> B[UEA Router]
+    B --> C[Code Intelligence]
+    B --> D[Impact / Dependency Analysis]
+    B --> E[Candidate Engine]
+    B --> F[Verification]
+    B --> G[Formal / Specialized Engines]
+    C --> H[Evidence]
+    D --> H
+    E --> H
+    F --> H
+    G --> H
+    H --> I[Result / Provenance]
+    E <--> F
+    K[KIO execution kernel] -. optional integration .-> B
+```
+
+UEA keeps the probabilistic boundary explicit: agents generate strategy and candidates; deterministic capabilities establish structure, dependencies, verification results, constraints, and provenance.
+
 ```text
 Coding Agent
 (OpenCode / Claude Code / Codex / other)
