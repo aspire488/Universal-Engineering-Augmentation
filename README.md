@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/github/issues-pr/aspire488/Universal-Engineering-Augmentation" alt="Pull Requests">
 </p>
 
-**Status:** Public alpha · v0.1.0
+**Status:** Public alpha · v0.1.0 · Laya routing integrated
 
 A **tool-agnostic engineering augmentation layer for coding agents**. It moves repeatable software-engineering work from probabilistic LLM reasoning into deterministic analysis, testing, verification, routing, and evidence systems.
 
@@ -110,6 +110,20 @@ is validated against the task-type set before use and then feeds the exact
 same capability/specialist/verification stack — it never bypasses validation,
 the harness, or permissions. No Laya install, a disabled flag, or any model
 failure leaves routing exactly as the deterministic classifier produced it.
+
+### Current verified state
+
+The current main baseline includes deterministic-first specialist routing with an optional local Laya System-1 fallback for `UNKNOWN` classifications.
+
+- Deterministic classification always runs first.
+- Laya is consulted only when deterministic routing returns `UNKNOWN`.
+- Labels are validated against the existing task-type allow-list.
+- The validated result feeds the existing capability, specialist, verification, and permission stack.
+- Laya is lazy-loaded, uses one checkpoint, and can be disabled with `UEA_LAYA_ENABLED=false`.
+- Missing dependencies or model failures fail soft and preserve deterministic routing.
+- The final Laya integration batch is verified at **62/62 tests passing**, with `verify_all` and compile checks clean.
+
+This does **not** turn UEA into an autonomous agent. UEA remains an agent-neutral engineering augmentation layer whose deterministic capabilities establish evidence and verification.
 
 ## Agent-neutral design
 
