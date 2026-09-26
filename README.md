@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/github/issues-pr/aspire488/Universal-Engineering-Augmentation" alt="Pull Requests">
 </p>
 
-**Status:** Public alpha · v0.1.0 · Laya routing integrated
+**Status:** Public alpha · v0.1.0 · deterministic-first routing + optional Laya System-1 integrated
 
 A **tool-agnostic engineering augmentation layer for coding agents**. It moves repeatable software-engineering work from probabilistic LLM reasoning into deterministic analysis, testing, verification, routing, and evidence systems.
 
@@ -105,7 +105,7 @@ Evidence → Candidate → Verification → Result
 
 Routing is deterministic-first: keyword classification runs first, and only
 when it returns `UNKNOWN` does `core/laya_router.py` consult the local Laya
-model (`UEA_LAYA_ENABLED`, default on, lazy single checkpoint). A Laya label
+model (`UEA_LAYA_ENABLED`, default false, lazy single checkpoint). A Laya label
 is validated against the task-type set before use and then feeds the exact
 same capability/specialist/verification stack — it never bypasses validation,
 the harness, or permissions. No Laya install, a disabled flag, or any model
@@ -113,7 +113,7 @@ failure leaves routing exactly as the deterministic classifier produced it.
 
 ### Current verified state
 
-The current main baseline includes deterministic-first specialist routing with an optional local Laya System-1 fallback for `UNKNOWN` classifications.
+The current main baseline includes deterministic-first specialist routing with an optional local Laya System-1 fallback for `UNKNOWN` classifications. The integration is complete and verified; UEA remains public alpha rather than a frozen project.
 
 - Deterministic classification always runs first.
 - Laya is consulted only when deterministic routing returns `UNKNOWN`.
@@ -122,6 +122,8 @@ The current main baseline includes deterministic-first specialist routing with a
 - Laya is lazy-loaded, uses one checkpoint, and can be disabled with `UEA_LAYA_ENABLED=false`.
 - Missing dependencies or model failures fail soft and preserve deterministic routing.
 - The final Laya integration batch is verified at **62/62 tests passing**, with `verify_all` and compile checks clean.
+- No Laya dependency is required for the base UEA install or CI path.
+- The fallback is advisory only: invalid labels, missing dependencies, or model failures preserve deterministic routing.
 
 This does **not** turn UEA into an autonomous agent. UEA remains an agent-neutral engineering augmentation layer whose deterministic capabilities establish evidence and verification.
 
