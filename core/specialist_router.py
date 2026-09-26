@@ -17,6 +17,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum
 
+from .laya_router import laya_classify
 from .specialist_registry import (
     SpecialistRegistry, SpecialistMeta, SpecialistDomain,
     SpecialistCapability, register_builtins,
@@ -216,6 +217,15 @@ class SpecialistRouter:
         # Step 1: Classify if not provided
         if task_type is None:
             task_type = self._classify_task(task_description)
+            if task_type is TaskType.UNKNOWN:
+                # Deterministic classification already ran and had no match;
+                # consult Laya System-1, accepting only a validated label.
+                label = laya_classify(
+                    task_description,
+                    [t.value for t in TaskType if t is not TaskType.UNKNOWN],
+                )
+                if label is not None:
+                    task_type = TaskType(label)
         if complexity is None:
             complexity = self._assess_complexity(task_description, task_type)
 

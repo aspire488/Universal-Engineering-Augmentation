@@ -76,3 +76,7 @@ tests/_release_boundary.py
 data/sqlite/augmentation.db
 data/sqlite/augmentation.db-wal
 data/sqlite/augmentation.db-shm
+
+# Model weights (Laya checkpoint artifacts, never commit)
+*.safetensors
+*.gguf

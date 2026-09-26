@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Laya System-1 routing fallback** — `core/laya_router.py` consults a local
+  Laya model only when deterministic keyword classification returns
+  `UNKNOWN`; labels are validated against the task-type set and feed the
+  existing capability/specialist/verification stack unchanged. Enabled by
+  default (`UEA_LAYA_ENABLED` kill-switch), lazy single checkpoint, fail-soft
+  when the model is unavailable. 11 new tests.
+
 ## [0.1.0] - 2026-09-10
 
 ### Added

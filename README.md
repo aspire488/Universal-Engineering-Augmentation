@@ -38,7 +38,6 @@ Universal Engineering Augmentation provides reusable engineering capabilities th
 
 ## Architecture
 
-
 ### Deterministic engineering pipeline
 
 ```mermaid
@@ -101,6 +100,16 @@ Evidence → Candidate → Verification → Result
 - Test-quality measurement
 - Evidence recording
 - Routing where rules are sufficient
+
+### Deterministic-first routing with Laya fallback
+
+Routing is deterministic-first: keyword classification runs first, and only
+when it returns `UNKNOWN` does `core/laya_router.py` consult the local Laya
+model (`UEA_LAYA_ENABLED`, default on, lazy single checkpoint). A Laya label
+is validated against the task-type set before use and then feeds the exact
+same capability/specialist/verification stack — it never bypasses validation,
+the harness, or permissions. No Laya install, a disabled flag, or any model
+failure leaves routing exactly as the deterministic classifier produced it.
 
 ## Agent-neutral design
 
