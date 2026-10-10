@@ -10,6 +10,8 @@ try:
     import tree_sitter_javascript as tsjs
     import tree_sitter_typescript as tsts
     import tree_sitter_json as tsjson
+    import tree_sitter_go as tsgo
+    import tree_sitter_rust as tsrust
     AVAILABLE = True
 except ImportError:
     AVAILABLE = False
@@ -23,7 +25,27 @@ if AVAILABLE:
         ".ts": Language(tsts.language_typescript()),
         ".tsx": Language(tsts.language_tsx()),
         ".json": Language(tsjson.language()),
+        ".go": Language(tsgo.language()),
+        ".rs": Language(tsrust.language()),
     }
+
+FUNCTION_NODE_TYPES = {
+    ".py": ("function_definition",),
+    ".go": ("function_declaration", "method_declaration"),
+    ".rs": ("function_item",),
+}
+
+CLASS_NODE_TYPES = {
+    ".py": ("class_definition",),
+    ".go": ("type_spec",),
+    ".rs": ("struct_item", "enum_item", "trait_item"),
+}
+
+IMPORT_NODE_TYPES = {
+    ".py": ("import_statement", "import_from_statement"),
+    ".go": ("import_declaration",),
+    ".rs": ("use_declaration",),
+}
 
 
 def _parser_for(filepath: str) -> Optional[Parser]:
@@ -83,12 +105,16 @@ def extract_functions(filepath: str) -> List[Dict]:
     tree = parser.parse(source)
 
     functions = []
-    _walk_for_type(tree.root_node, source, "function_definition", functions)
+    for node_type in FUNCTION_NODE_TYPES.get(Path(filepath).suffix, ("function_definition",)):
+        _walk_for_type(tree.root_node, source, node_type, functions)
 
     result = []
     for fn in functions:
-        name_node = _child_by_type(fn, "identifier")
-        params_node = _child_by_type(fn, "parameters")
+        name_node = _child_by_type(fn, "identifier") or _child_by_type(fn, "type_identifier")
+        params_node = (
+            _child_by_type(fn, "parameters")
+            or _child_by_type(fn, "parameter_list")
+        )
         result.append({
             "name": name_node.text.decode() if name_node else "<anonymous>",
             "start_line": fn.start_point[0] + 1,
@@ -109,11 +135,22 @@ def extract_classes(filepath: str) -> List[Dict]:
     tree = parser.parse(source)
 
     classes = []
-    _walk_for_type(tree.root_node, source, "class_definition", classes)
+    for node_type in CLASS_NODE_TYPES.get(Path(filepath).suffix, ("class_definition",)):
+        _walk_for_type(tree.root_node, source, node_type, classes)
+
+    # Go type_spec also represents aliases; only report concrete structs/interfaces.
+    if Path(filepath).suffix == ".go":
+        classes = [
+            node for node in classes
+            if _child_by_type(node, "struct_type") or _child_by_type(node, "interface_type")
+        ]
 
     result = []
     for cls in classes:
-        name_node = _child_by_type(cls, "identifier")
+        name_node = (
+            _child_by_type(cls, "identifier")
+            or _child_by_type(cls, "type_identifier")
+        )
         result.append({
             "name": name_node.text.decode() if name_node else "<anonymous>",
             "start_line": cls.start_point[0] + 1,
@@ -134,16 +171,14 @@ def extract_imports(filepath: str) -> List[Dict]:
     tree = parser.parse(source)
 
     imports = []
-    for node in _walk_for_type(tree.root_node, source, "import_statement", []):
-        imports.append({
-            "text": source[node.start_byte:node.end_byte].decode("utf-8", errors="replace").strip(),
-            "line": node.start_point[0] + 1,
-        })
-    for node in _walk_for_type(tree.root_node, source, "import_from_statement", []):
-        imports.append({
-            "text": source[node.start_byte:node.end_byte].decode("utf-8", errors="replace").strip(),
-            "line": node.start_point[0] + 1,
-        })
+    for node_type in IMPORT_NODE_TYPES.get(
+        Path(filepath).suffix, ("import_statement", "import_from_statement")
+    ):
+        for node in _walk_for_type(tree.root_node, source, node_type, []):
+            imports.append({
+                "text": source[node.start_byte:node.end_byte].decode("utf-8", errors="replace").strip(),
+                "line": node.start_point[0] + 1,
+            })
     return imports
 
 
@@ -189,8 +224,9 @@ def extract_function_body(filepath: str, name: str) -> Optional[str]:
     source = Path(filepath).read_bytes()
     tree = parser.parse(source)
 
-    for fn in _walk_for_type(tree.root_node, source, "function_definition", []):
-        name_node = _child_by_type(fn, "identifier")
+    for node_type in FUNCTION_NODE_TYPES.get(Path(filepath).suffix, ("function_definition",)):
+      for fn in _walk_for_type(tree.root_node, source, node_type, []):
+        name_node = _child_by_type(fn, "identifier") or _child_by_type(fn, "type_identifier")
         if name_node and name_node.text.decode() == name:
             return source[fn.start_byte:fn.end_byte].decode("utf-8", errors="replace")
     return None
@@ -209,7 +245,14 @@ def get_import_graph(filepath: str) -> Dict:
         elif text.startswith("import "):
             parts = text.split()
             if len(parts) >= 2:
-                modules.append(parts[1].split(".")[0])
+                modules.append(parts[1].strip('"\\'').split(".")[0])
+        elif text.startswith("use "):
+            path = text[4:].split(";", 1)[0].strip()
+            if path:
+                modules.append(path.split("::")[0])
+        elif Path(filepath).suffix == ".go":
+            import re
+            modules.extend(re.findall(r'["\\']([^"\\']+)["\\']', text))
     return {
         "file": filepath,
         "imports": imports,
