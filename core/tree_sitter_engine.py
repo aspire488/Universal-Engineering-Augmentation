@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 import json
+import re
 
 try:
     from tree_sitter import Language, Parser
@@ -247,14 +248,13 @@ def get_import_graph(filepath: str) -> Dict:
         elif text.startswith("import "):
             parts = text.split()
             if len(parts) >= 2:
-                modules.append(parts[1].strip('"\\'').split(".")[0])
+                modules.append(parts[1].strip("\\\"'").split(".")[0])
         elif text.startswith("use "):
             path = text[4:].split(";", 1)[0].strip()
             if path:
                 modules.append(path.split("::")[0])
         elif Path(filepath).suffix == ".go":
-            import re
-            modules.extend(re.findall(r'["\\']([^"\\']+)["\\']', text))
+            modules.extend(re.findall(r"""["']([^"']+)["']""", text))
     return {
         "file": filepath,
         "imports": imports,
