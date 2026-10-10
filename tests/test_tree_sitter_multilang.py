@@ -13,7 +13,10 @@ from core.tree_sitter_engine import (
 def test_go_structural_analysis(tmp_path: Path) -> None:
     source = '''package main
 
-import "fmt"
+import (
+    "fmt"
+    "strings"
+)
 
 type Counter struct {
     value int
@@ -33,7 +36,7 @@ func Add(a int, b int) int {
     assert [item["name"] for item in extract_functions(str(filepath))] == ["Add"]
     assert [item["name"] for item in extract_classes(str(filepath))] == ["Counter"]
     assert len(extract_imports(str(filepath))) == 1
-    assert "fmt" in get_import_graph(str(filepath))["top_level_modules"]
+    assert {"fmt", "strings"} <= set(get_import_graph(str(filepath))["top_level_modules"])
     assert "return a + b" in (extract_function_body(str(filepath), "Add") or "")
 
 
