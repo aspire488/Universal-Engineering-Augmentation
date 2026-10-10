@@ -224,11 +224,13 @@ def extract_function_body(filepath: str, name: str) -> Optional[str]:
     source = Path(filepath).read_bytes()
     tree = parser.parse(source)
 
-    for node_type in FUNCTION_NODE_TYPES.get(Path(filepath).suffix, ("function_definition",)):
-      for fn in _walk_for_type(tree.root_node, source, node_type, []):
-        name_node = _child_by_type(fn, "identifier") or _child_by_type(fn, "type_identifier")
-        if name_node and name_node.text.decode() == name:
-            return source[fn.start_byte:fn.end_byte].decode("utf-8", errors="replace")
+    for node_type in FUNCTION_NODE_TYPES.get(
+        Path(filepath).suffix, ("function_definition",)
+    ):
+        for fn in _walk_for_type(tree.root_node, source, node_type, []):
+            name_node = _child_by_type(fn, "identifier") or _child_by_type(fn, "type_identifier")
+            if name_node and name_node.text.decode() == name:
+                return source[fn.start_byte:fn.end_byte].decode("utf-8", errors="replace")
     return None
 
 
