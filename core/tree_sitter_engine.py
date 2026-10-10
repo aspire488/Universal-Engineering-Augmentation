@@ -245,16 +245,16 @@ def get_import_graph(filepath: str) -> Dict:
             parts = text.split()
             if len(parts) >= 2:
                 modules.append(parts[1].split(".")[0])
-        elif text.startswith("import "):
-            parts = text.split()
-            if len(parts) >= 2:
-                modules.append(parts[1].strip("\\\"'").split(".")[0])
         elif text.startswith("use "):
             path = text[4:].split(";", 1)[0].strip()
             if path:
                 modules.append(path.split("::")[0])
         elif Path(filepath).suffix == ".go":
             modules.extend(re.findall(r"""["']([^"']+)["']""", text))
+        elif text.startswith("import "):
+            parts = text.split()
+            if len(parts) >= 2:
+                modules.append(parts[1].strip("\\\"'").split(".")[0])
     return {
         "file": filepath,
         "imports": imports,
