@@ -67,7 +67,7 @@ def _node_info(node, source_bytes: bytes) -> dict:
     }
 
 
-def parse_file(filepath: str) -> Dict:
+def parse_file(filepath: str) -> dict:
     """Parse a file and return its structural AST summary."""
     parser = _parser_for(filepath)
     if not parser:
@@ -129,7 +129,7 @@ def extract_functions(filepath: str) -> list[dict]:
     return result
 
 
-def extract_classes(filepath: str) -> List[Dict]:
+def extract_classes(filepath: str) -> list[dict]:
     """Extract all class definitions with name, bases, and line range."""
     parser = _parser_for(filepath)
     if not parser:
@@ -164,7 +164,7 @@ def extract_classes(filepath: str) -> List[Dict]:
     return result
 
 
-def extract_imports(filepath: str) -> List[Dict]:
+def extract_imports(filepath: str) -> list[dict]:
     """Extract all import statements."""
     parser = _parser_for(filepath)
     if not parser:
@@ -239,7 +239,7 @@ def extract_function_body(filepath: str, name: str) -> str | None:
     return None
 
 
-def get_import_graph(filepath: str) -> Dict:
+def get_import_graph(filepath: str) -> dict:
     """Extract import relationships from a file for graph analysis."""
     imports = extract_imports(filepath)
     modules = []
@@ -266,7 +266,7 @@ def get_import_graph(filepath: str) -> Dict:
     }
 
 
-def batch_parse(filepaths: list[str]) -> Dict:
+def batch_parse(filepaths: list[str]) -> dict:
     """Parse multiple files and return aggregate stats."""
     total_functions = 0
     total_classes = 0
