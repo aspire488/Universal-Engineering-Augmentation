@@ -1,18 +1,17 @@
 """Tree-sitter structural code intelligence engine."""
 
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 import json
 import re
+from pathlib import Path
 
 try:
-    from tree_sitter import Language, Parser
-    import tree_sitter_python as tspython
-    import tree_sitter_javascript as tsjs
-    import tree_sitter_typescript as tsts
-    import tree_sitter_json as tsjson
     import tree_sitter_go as tsgo
+    import tree_sitter_javascript as tsjs
+    import tree_sitter_json as tsjson
+    import tree_sitter_python as tspython
     import tree_sitter_rust as tsrust
+    import tree_sitter_typescript as tsts
+    from tree_sitter import Language, Parser
     AVAILABLE = True
 except ImportError:
     AVAILABLE = False
@@ -49,7 +48,7 @@ IMPORT_NODE_TYPES = {
 }
 
 
-def _parser_for(filepath: str) -> Optional[Parser]:
+def _parser_for(filepath: str) -> Parser | None:
     ext = Path(filepath).suffix
     lang = LANG_MAP.get(ext)
     if not lang:
@@ -57,7 +56,7 @@ def _parser_for(filepath: str) -> Optional[Parser]:
     return Parser(lang)
 
 
-def _node_info(node, source_bytes: bytes) -> Dict:
+def _node_info(node, source_bytes: bytes) -> dict:
     return {
         "type": node.type,
         "start_line": node.start_point[0] + 1,
@@ -96,7 +95,7 @@ def _count_nodes(node) -> int:
     return count
 
 
-def extract_functions(filepath: str) -> List[Dict]:
+def extract_functions(filepath: str) -> list[dict]:
     """Extract all function definitions with name, args, and line range."""
     parser = _parser_for(filepath)
     if not parser:
@@ -106,12 +105,16 @@ def extract_functions(filepath: str) -> List[Dict]:
     tree = parser.parse(source)
 
     functions = []
-    for node_type in FUNCTION_NODE_TYPES.get(Path(filepath).suffix, ("function_definition",)):
+    for node_type in FUNCTION_NODE_TYPES.get(
+        Path(filepath).suffix, ("function_definition",)
+    ):
         _walk_for_type(tree.root_node, source, node_type, functions)
 
     result = []
     for fn in functions:
-        name_node = _child_by_type(fn, "identifier") or _child_by_type(fn, "type_identifier")
+        name_node = _child_by_type(fn, "identifier") or _child_by_type(
+            fn, "type_identifier"
+        )
         params_node = (
             _child_by_type(fn, "parameters")
             or _child_by_type(fn, "parameter_list")
@@ -148,9 +151,8 @@ def extract_classes(filepath: str) -> List[Dict]:
 
     result = []
     for cls in classes:
-        name_node = (
-            _child_by_type(cls, "identifier")
-            or _child_by_type(cls, "type_identifier")
+        name_node = _child_by_type(cls, "identifier") or _child_by_type(
+            cls, "type_identifier"
         )
         result.append({
             "name": name_node.text.decode() if name_node else "<anonymous>",
@@ -177,21 +179,21 @@ def extract_imports(filepath: str) -> List[Dict]:
     ):
         for node in _walk_for_type(tree.root_node, source, node_type, []):
             imports.append({
-                "text": source[node.start_byte:node.end_byte].decode("utf-8", errors="replace").strip(),
+                "text": source[node.start_byte:node.end_byte]
+                .decode("utf-8", errors="replace")
+                .strip(),
                 "line": node.start_point[0] + 1,
             })
     return imports
 
 
-def find_symbol(filepath: str, name: str) -> Optional[Dict]:
+def find_symbol(filepath: str, name: str) -> dict | None:
     """Find a specific symbol by name in a file."""
     parser = _parser_for(filepath)
     if not parser:
         return None
 
     source = Path(filepath).read_bytes()
-    tree = parser.parse(source)
-
     for func in extract_functions(filepath):
         if func["name"] == name:
             func["kind"] = "function"
@@ -208,7 +210,7 @@ def find_symbol(filepath: str, name: str) -> Optional[Dict]:
     return None
 
 
-def get_definition_range(filepath: str, name: str) -> Optional[Tuple[int, int]]:
+def get_definition_range(filepath: str, name: str) -> tuple[int, int] | None:
     """Get line range (start, end) for a symbol definition."""
     symbol = find_symbol(filepath, name)
     if symbol:
@@ -216,7 +218,7 @@ def get_definition_range(filepath: str, name: str) -> Optional[Tuple[int, int]]:
     return None
 
 
-def extract_function_body(filepath: str, name: str) -> Optional[str]:
+def extract_function_body(filepath: str, name: str) -> str | None:
     """Extract the full source text of a function."""
     parser = _parser_for(filepath)
     if not parser:
@@ -229,7 +231,9 @@ def extract_function_body(filepath: str, name: str) -> Optional[str]:
         Path(filepath).suffix, ("function_definition",)
     ):
         for fn in _walk_for_type(tree.root_node, source, node_type, []):
-            name_node = _child_by_type(fn, "identifier") or _child_by_type(fn, "type_identifier")
+            name_node = _child_by_type(fn, "identifier") or _child_by_type(
+                fn, "type_identifier"
+            )
             if name_node and name_node.text.decode() == name:
                 return source[fn.start_byte:fn.end_byte].decode("utf-8", errors="replace")
     return None
@@ -262,7 +266,7 @@ def get_import_graph(filepath: str) -> Dict:
     }
 
 
-def batch_parse(filepaths: List[str]) -> Dict:
+def batch_parse(filepaths: list[str]) -> Dict:
     """Parse multiple files and return aggregate stats."""
     total_functions = 0
     total_classes = 0
@@ -310,7 +314,11 @@ def _get_decorators(fn_node, source_bytes):
         if child.type == "decorated_definition":
             for sub in child.children:
                 if sub.type == "decorator":
-                    decos.append(source_bytes[sub.start_byte:sub.end_byte].decode("utf-8", errors="replace").strip())
+                    decos.append(
+                        source_bytes[sub.start_byte:sub.end_byte]
+                        .decode("utf-8", errors="replace")
+                        .strip()
+                    )
     return decos
 
 
