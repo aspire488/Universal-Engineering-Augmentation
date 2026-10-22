@@ -193,7 +193,6 @@ def find_symbol(filepath: str, name: str) -> dict | None:
     if not parser:
         return None
 
-    source = Path(filepath).read_bytes()
     for func in extract_functions(filepath):
         if func["name"] == name:
             func["kind"] = "function"
