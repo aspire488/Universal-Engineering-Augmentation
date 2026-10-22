@@ -112,8 +112,10 @@ def extract_functions(filepath: str) -> list[dict]:
 
     result = []
     for fn in functions:
-        name_node = _child_by_type(fn, "identifier") or _child_by_type(
-            fn, "type_identifier"
+        name_node = (
+            _child_by_type(fn, "identifier")
+            or _child_by_type(fn, "field_identifier")
+            or _child_by_type(fn, "type_identifier")
         )
         params_node = (
             _child_by_type(fn, "parameters")
@@ -230,8 +232,10 @@ def extract_function_body(filepath: str, name: str) -> str | None:
         Path(filepath).suffix, ("function_definition",)
     ):
         for fn in _walk_for_type(tree.root_node, source, node_type, []):
-            name_node = _child_by_type(fn, "identifier") or _child_by_type(
-                fn, "type_identifier"
+            name_node = (
+                _child_by_type(fn, "identifier")
+                or _child_by_type(fn, "field_identifier")
+                or _child_by_type(fn, "type_identifier")
             )
             if name_node and name_node.text.decode() == name:
                 return source[fn.start_byte:fn.end_byte].decode("utf-8", errors="replace")
