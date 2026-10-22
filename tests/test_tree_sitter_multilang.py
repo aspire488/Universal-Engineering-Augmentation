@@ -37,12 +37,21 @@ func (c *Counter) Increment() {
     parsed = parse_file(str(filepath))
     assert "error" not in parsed
     assert parsed["language"] == ".go"
-    assert [item["name"] for item in extract_functions(str(filepath))] == ["Add", "Increment"]
+    assert [item["name"] for item in extract_functions(str(filepath))] == [
+        "Add",
+        "Increment",
+    ]
     assert [item["name"] for item in extract_classes(str(filepath))] == ["Counter"]
     assert len(extract_imports(str(filepath))) == 1
-    assert {"fmt", "strings"} <= set(get_import_graph(str(filepath))["top_level_modules"])
-    assert "return a + b" in (extract_function_body(str(filepath), "Add") or "")
-    assert "c.value++" in (extract_function_body(str(filepath), "Increment") or "")
+    assert {"fmt", "strings"} <= set(
+        get_import_graph(str(filepath))["top_level_modules"]
+    )
+    assert "return a + b" in (
+        extract_function_body(str(filepath), "Add") or ""
+    )
+    assert "c.value++" in (
+        extract_function_body(str(filepath), "Increment") or ""
+    )
 
 
 def test_rust_structural_analysis(tmp_path: Path) -> None:
