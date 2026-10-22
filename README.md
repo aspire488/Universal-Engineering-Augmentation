@@ -36,6 +36,19 @@ Universal Engineering Augmentation provides reusable engineering capabilities th
 - **Analytics** — DuckDB queries over engineering events
 - **Project detection** — select capability profiles from repository structure
 
+### Structural language capability matrix
+
+| Language | File extensions | Extracted structure |
+|---|---|---|
+| Python | `.py` | Functions, classes, imports |
+| JavaScript | `.js`, `.jsx` | Parsing supported; extraction follows grammar node coverage |
+| TypeScript | `.ts`, `.tsx` | Parsing supported; extraction follows grammar node coverage |
+| JSON | `.json` | Syntax tree and node counts |
+| Go | `.go` | Functions, methods, structs/interfaces, imports |
+| Rust | `.rs` | Functions, structs, enums, traits, `use` declarations |
+
+Unsupported extensions return an explicit error from `parse_file`; they are not silently treated as Python.
+
 ## Architecture
 
 ### Deterministic engineering pipeline
