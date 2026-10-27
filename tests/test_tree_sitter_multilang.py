@@ -22,6 +22,10 @@ type Counter struct {
     value int
 }
 
+type Printer interface {
+    Print()
+}
+
 func Add(a int, b int) int {
     fmt.Println(a)
     return a + b
@@ -41,7 +45,10 @@ func (c *Counter) Increment() {
         "Add",
         "Increment",
     ]
-    assert [item["name"] for item in extract_classes(str(filepath))] == ["Counter"]
+    assert [item["name"] for item in extract_classes(str(filepath))] == [
+        "Counter",
+        "Printer",
+    ]
     assert len(extract_imports(str(filepath))) == 1
     assert {"fmt", "strings"} <= set(
         get_import_graph(str(filepath))["top_level_modules"]
@@ -61,6 +68,15 @@ struct Counter {
     value: i32,
 }
 
+enum Mode {
+    Fast,
+    Slow,
+}
+
+trait Incrementable {
+    fn increment(&mut self);
+}
+
 fn add(a: i32, b: i32) -> i32 {
     a + b
 }
@@ -72,7 +88,11 @@ fn add(a: i32, b: i32) -> i32 {
     assert "error" not in parsed
     assert parsed["language"] == ".rs"
     assert [item["name"] for item in extract_functions(str(filepath))] == ["add"]
-    assert [item["name"] for item in extract_classes(str(filepath))] == ["Counter"]
+    assert [item["name"] for item in extract_classes(str(filepath))] == [
+        "Counter",
+        "Mode",
+        "Incrementable",
+    ]
     assert len(extract_imports(str(filepath))) == 1
     assert "std" in get_import_graph(str(filepath))["top_level_modules"]
     assert "a + b" in (extract_function_body(str(filepath), "add") or "")
