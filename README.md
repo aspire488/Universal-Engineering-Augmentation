@@ -1,18 +1,40 @@
-# Universal Engineering Augmentation
+<p align="center"><img src="assets/brand/readme-hero.svg" width="100%" alt="Universal Engineering Augmentation — Turn agent output into evidence you can verify."/></p>
 
 <p align="center">
   <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml"><img src="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/releases"><img src="https://img.shields.io/github/v/release/aspire488/Universal-Engineering-Augmentation" alt="Latest Release"></a>
-  <img src="https://img.shields.io/badge/version-0.1.0-blue" alt="Version 0.1.0">
-  <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+"></a>
-  <img src="https://img.shields.io/github/license/aspire488/Universal-Engineering-Augmentation" alt="MIT License">
-  <img src="https://img.shields.io/github/issues/aspire488/Universal-Engineering-Augmentation" alt="Issues">
-  <img src="https://img.shields.io/github/issues-pr/aspire488/Universal-Engineering-Augmentation" alt="Pull Requests">
+  <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/releases"><img src="https://img.shields.io/github/v/release/aspire488/Universal-Engineering-Augmentation?label=release" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/PYTHON-3.10%2B-3976a8?style=flat-square" alt="Python 3.10+">
+  <img src="https://img.shields.io/github/license/aspire488/Universal-Engineering-Augmentation?style=flat-square" alt="MIT license">
 </p>
 
-**Status:** Public alpha · v0.1.0 · deterministic-first routing + optional Laya System-1 integrated
+# Universal Engineering Augmentation
 
-A **tool-agnostic engineering augmentation layer for coding agents**. It moves repeatable software-engineering work from probabilistic LLM reasoning into deterministic analysis, testing, verification, routing, and evidence systems.
+**A deterministic engineering layer for coding agents.**
+
+UEA moves repeatable software-engineering work out of probabilistic reasoning and into tools that can inspect, verify, measure, and preserve evidence. It works beside OpenCode, Claude Code, Codex, and other agents without binding the core to one host.
+
+<blockquote>
+  Agents propose. Deterministic systems verify. Evidence records what actually happened.
+</blockquote>
+
+## Capability map
+
+| Engineering capability | What UEA establishes |
+|---|---|
+| Code intelligence | Tree-sitter structure, symbols, and parsing |
+| Impact analysis | Dependency graphs, affected symbols, blast radius |
+| Verification | Tiered checks from minimal through security and full |
+| Test quality | Property exploration and mutation testing |
+| Formal methods | SAT/SMT constraints through Z3 |
+| Candidate isolation | Parallel implementations in Git worktrees |
+| Routing | Deterministic-first specialist selection |
+| Evidence | Provenance, event records, and reproducible results |
+| Analytics | DuckDB queries over engineering events |
+| Integration | Agent adapters and stable JSON CLI |
+
+**Project status:** Public alpha · v0.1.0 · deterministic-first routing with optional Laya System-1 fallback.
+
+---
 
 ## Why this exists
 
