@@ -1,21 +1,38 @@
 """Verify all core infrastructure works."""
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 SCRIPT_DIR = Path(__file__).parent
 SAMPLE_FILE = str(SCRIPT_DIR / "sample_target.py")
 PROJECT_ROOT = str(SCRIPT_DIR.parent)
 
-from core.event_log import get_db, init_db, log_event, log_task, complete_task, log_candidate, update_candidate, register_skill, record_skill_use, get_project_stats
+from core.analytics import AVAILABLE as DUCK_AVAILABLE
+from core.analytics import get_event_summary
+from core.event_log import (
+    complete_task,
+    get_db,
+    get_project_stats,
+    init_db,
+    log_candidate,
+    log_event,
+    log_task,
+    record_skill_use,
+    register_skill,
+    update_candidate,
+)
+from core.mutation_testing import MutantGenerator, apply_mutation
 from core.project_detector import detect_project
+from core.property_testing import AVAILABLE as HYP_AVAILABLE
+from core.property_testing import run_property_test
+from core.sat_engine import AVAILABLE as Z3_AVAILABLE
+from core.sat_engine import solve_sat, verify_preconditions
+from core.tree_sitter_engine import AVAILABLE as TS_AVAILABLE
+from core.tree_sitter_engine import find_symbol, parse_file
 from core.verification import run_verification
 from core.worktree_engine import list_worktrees
-from core.tree_sitter_engine import parse_file, find_symbol, AVAILABLE as TS_AVAILABLE
-from core.property_testing import run_property_test, AVAILABLE as HYP_AVAILABLE
-from core.mutation_testing import MutantGenerator, apply_mutation
-from core.sat_engine import solve_sat, verify_preconditions, AVAILABLE as Z3_AVAILABLE
-from core.analytics import get_event_summary, AVAILABLE as DUCK_AVAILABLE
+
 
 def main():
     errors = []
@@ -128,7 +145,8 @@ def main():
     # 12. Property testing (Hypothesis)
     try:
         assert HYP_AVAILABLE, "hypothesis not installed"
-        from hypothesis import given, strategies as st, settings
+        from hypothesis import given, settings
+        from hypothesis import strategies as st
         @given(a=st.integers(), b=st.integers())
         @settings(max_examples=10, deadline=None)
         def _test_add(a, b):

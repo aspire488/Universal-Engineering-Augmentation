@@ -1,9 +1,9 @@
 """Tiered verification engine for Universal Engineering Augmentation."""
 
-import subprocess
 import json
-import time
 import os
+import subprocess
+import time
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent.parent

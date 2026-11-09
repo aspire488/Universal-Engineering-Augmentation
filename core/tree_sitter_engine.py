@@ -1,14 +1,14 @@
 """Tree-sitter structural code intelligence engine."""
 
-from pathlib import Path
 import json
+from pathlib import Path
 
 try:
-    from tree_sitter import Language, Parser
-    import tree_sitter_python as tspython
     import tree_sitter_javascript as tsjs
-    import tree_sitter_typescript as tsts
     import tree_sitter_json as tsjson
+    import tree_sitter_python as tspython
+    import tree_sitter_typescript as tsts
+    from tree_sitter import Language, Parser
     AVAILABLE = True
 except ImportError:
     AVAILABLE = False

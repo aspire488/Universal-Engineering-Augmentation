@@ -5,9 +5,14 @@ from dataclasses import dataclass, field
 
 try:
     from z3 import (
-        Solver, Bool, Int, Real, BitVec,
+        BitVec,
+        Bool,
+        Int,
         Not,
-        sat, unsat,
+        Real,
+        Solver,
+        sat,
+        unsat,
     )
     AVAILABLE = True
 except ImportError:

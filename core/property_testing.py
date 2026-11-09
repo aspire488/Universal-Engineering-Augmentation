@@ -1,10 +1,10 @@
 """Property-based testing engine using Hypothesis."""
 
-import json
 import importlib.util
-from pathlib import Path
+import json
 from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 
 try:
     import hypothesis  # noqa: F401  # availability probe only; the generated test source imports what it needs

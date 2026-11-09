@@ -1,7 +1,7 @@
 """Git worktree engine for candidate isolation."""
 
-import subprocess
 import os
+import subprocess
 import uuid
 from pathlib import Path
 

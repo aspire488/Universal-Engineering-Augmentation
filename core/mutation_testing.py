@@ -4,9 +4,8 @@ import ast
 import json
 import subprocess
 import time
-from pathlib import Path
 from dataclasses import dataclass
-
+from pathlib import Path
 
 MUTATION_OPERATORS = [
     "remove_not",

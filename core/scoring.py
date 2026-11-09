@@ -15,10 +15,10 @@ is harness-specific and lives in adapters/.
 """
 
 import json
+from dataclasses import asdict, dataclass, field
+from enum import Enum
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass, field, asdict
-from enum import Enum
 
 _ROOT = Path(__file__).resolve().parent.parent
 

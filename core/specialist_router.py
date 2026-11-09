@@ -10,14 +10,16 @@ Specialists only augment when deterministic capability is insufficient.
 No multi-agent fan-out. One specialist at a time. Evidence before reasoning.
 """
 
-from pathlib import Path
-from typing import Any
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 from .laya_router import laya_classify
 from .specialist_registry import (
-    SpecialistRegistry, SpecialistMeta, SpecialistDomain,
+    SpecialistDomain,
+    SpecialistMeta,
+    SpecialistRegistry,
     register_builtins,
 )
 

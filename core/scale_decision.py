@@ -10,10 +10,10 @@ Feynman scale decision pattern:
 This module provides the decision logic. It does NOT execute — it recommends.
 """
 
-from pathlib import Path
-from typing import Any
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 _ROOT = Path(__file__).resolve().parent.parent
 

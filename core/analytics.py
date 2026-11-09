@@ -2,8 +2,8 @@
 
 import json
 import os
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
 try:
     import duckdb

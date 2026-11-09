@@ -1,9 +1,9 @@
 """Symbol Impact Model - Track impact at class/function level."""
 
-import re
 import json
-from pathlib import Path
+import re
 from collections import defaultdict
+from pathlib import Path
 
 
 def find_references(symbol: str, root: Path) -> list[dict]:

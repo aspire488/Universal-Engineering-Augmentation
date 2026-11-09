@@ -1,11 +1,12 @@
 """Candidate engine - propose, isolate, evaluate, select."""
 
-import uuid
 import json
+import uuid
 from pathlib import Path
-from .worktree_engine import create_worktree, remove_worktree, run_in_worktree
+
+from .event_log import get_db, log_candidate, update_candidate
 from .verification import run_verification
-from .event_log import log_candidate, update_candidate, get_db
+from .worktree_engine import create_worktree, remove_worktree, run_in_worktree
 
 
 def propose_candidates(problem: str, approaches: list[str], repo_path: str, base_branch: str = "main") -> list[dict]:

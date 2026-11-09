@@ -1,8 +1,12 @@
-import sys, json
+import json
+import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from core.property_testing import run_property_test, AVAILABLE
-from hypothesis import given, strategies as st, settings
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
+from core.property_testing import AVAILABLE, run_property_test
 
 print(f"Hypothesis available: {AVAILABLE}")
 

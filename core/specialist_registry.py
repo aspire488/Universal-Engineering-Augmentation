@@ -12,13 +12,13 @@ Architecture:
 No vendor-specific dependencies. OpenCode is reference adapter only.
 """
 
+import hashlib
 import json
 import os
-import hashlib
+from dataclasses import asdict, dataclass, field
+from enum import Enum
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass, field, asdict
-from enum import Enum
 
 _ROOT = Path(__file__).resolve().parent.parent
 REGISTRY_DIR = Path(os.environ.get("AUGMENTATION_SPECIALISTS", str(_ROOT / "data" / "specialists")))

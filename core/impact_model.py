@@ -1,10 +1,10 @@
 """Impact Model - Deterministic analysis of code change impact."""
 
+import json
 import os
 import re
-import json
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 
 def find_imports(file_path: Path) -> set[str]:

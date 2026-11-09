@@ -7,9 +7,9 @@ Run: python -m pytest tests/test_specialist_system.py -v
 Or:  python tests/test_specialist_system.py
 """
 
+import shutil
 import sys
 import tempfile
-import shutil
 from pathlib import Path
 
 # Add parent to path for imports
@@ -19,8 +19,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 def test_specialist_registry():
     """Test specialist registry: register, lookup, deduplicate."""
     from core.specialist_registry import (
-        SpecialistRegistry, SpecialistDomain,
-        SpecialistCapability, register_builtins,
+        SpecialistCapability,
+        SpecialistDomain,
+        SpecialistRegistry,
+        register_builtins,
     )
 
     tmpdir = tempfile.mkdtemp()
@@ -62,7 +64,8 @@ def test_specialist_registry():
 def test_specialist_router():
     """Test specialist router: classify, route, verify."""
     from core.specialist_router import (
-        SpecialistRouter, TaskComplexity,
+        SpecialistRouter,
+        TaskComplexity,
     )
 
     router = SpecialistRouter()
@@ -107,7 +110,9 @@ def test_specialist_router():
 def test_deterministic_scoring():
     """Test deterministic scoring: metrics -> score -> confidence."""
     from core.scoring import (
-        DeterministicScorer, MetricEvidence, ScoreDimension,
+        DeterministicScorer,
+        MetricEvidence,
+        ScoreDimension,
     )
     from core.verification import VerificationResult
 
@@ -211,7 +216,9 @@ def test_provenance():
     from core.event_log import init_db
     init_db()
     from core.provenance import (
-        ProvenanceTracker, EvidenceNode, compute_content_hash,
+        EvidenceNode,
+        ProvenanceTracker,
+        compute_content_hash,
     )
 
     tracker = ProvenanceTracker()
@@ -258,10 +265,10 @@ def test_full_chain():
     """Test the complete chain: task -> router -> evidence -> specialist -> verification -> provenance."""
     from core.event_log import init_db
     init_db()
-    from core.specialist_router import SpecialistRouter, TaskComplexity
-    from core.scoring import DeterministicScorer, MetricEvidence, ScoreDimension
+    from core.provenance import EvidenceNode, ProvenanceTracker
     from core.scale_decision import ScaleDecider
-    from core.provenance import ProvenanceTracker, EvidenceNode
+    from core.scoring import DeterministicScorer, MetricEvidence, ScoreDimension
+    from core.specialist_router import SpecialistRouter, TaskComplexity
     from core.verification import run_verification
 
     # Step 1: Route the task

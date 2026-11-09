@@ -1,10 +1,10 @@
 """Universal Engineering Augmentation Event Log - SQLite-backed engineering event tracking."""
 
-import sqlite3
 import json
 import os
-from pathlib import Path
+import sqlite3
 from contextlib import contextmanager
+from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(os.environ.get("AUGMENTATION_DB", str(_ROOT / "data" / "sqlite" / "augmentation.db")))

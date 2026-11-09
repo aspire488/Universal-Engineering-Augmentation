@@ -1,7 +1,7 @@
 """Project detection and capability routing for Universal Engineering Augmentation."""
 
-import os
 import json
+import os
 from pathlib import Path
 from typing import Any
 
