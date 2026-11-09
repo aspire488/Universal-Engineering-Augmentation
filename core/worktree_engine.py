@@ -26,7 +26,7 @@ def create_worktree(repo_path: str, branch_name: str | None = None, base_branch:
         return {"success": False, "error": out, "branch": branch_name}
 
 
-def remove_worktree(repo_path: str, branch_name: str):
+def remove_worktree(repo_path: str, branch_name: str) -> None:
     """Remove a worktree after candidate evaluation."""
     worktree_path = WORKTREES_DIR / branch_name
     _run(f'git worktree remove "{worktree_path}" --force', cwd=repo_path)
@@ -40,7 +40,7 @@ def list_worktrees(repo_path: str) -> list[dict[str, Any]]:
         return []
     
     trees = []
-    current = {}
+    current: dict[str, Any] = {}
     for line in out.strip().split("\n"):
         if line.startswith("worktree "):
             if current:
@@ -55,7 +55,7 @@ def list_worktrees(repo_path: str) -> list[dict[str, Any]]:
     return trees
 
 
-def copy_file_to_worktree(worktree_path: str, file_path: str, content: str):
+def copy_file_to_worktree(worktree_path: str, file_path: str, content: str) -> None:
     """Write a file into a worktree."""
     full_path = Path(worktree_path) / file_path
     full_path.parent.mkdir(parents=True, exist_ok=True)

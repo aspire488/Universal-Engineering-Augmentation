@@ -203,11 +203,11 @@ class SpecialistRouter:
         # decision.deterministic_capabilities lists what to run first
     """
 
-    def __init__(self, registry: SpecialistRegistry = None):
+    def __init__(self, registry: SpecialistRegistry | None = None):
         self._registry = registry or register_builtins()
 
-    def route(self, task_description: str, task_type: TaskType = None,
-              complexity: TaskComplexity = None) -> RoutingDecision:
+    def route(self, task_description: str, task_type: TaskType | None = None,
+              complexity: TaskComplexity | None = None) -> RoutingDecision:
         """Route a task through the deterministic-first pipeline."""
         # Convert strings to enums if needed
         if isinstance(task_type, str):
@@ -359,7 +359,7 @@ class SpecialistRouter:
 
     def get_deterministic_plan(self, decision: RoutingDecision) -> list[dict[str, Any]]:
         """Generate a deterministic execution plan from routing decision."""
-        plan = []
+        plan: list[dict[str, Any]] = []
         for cap in decision.deterministic_capabilities:
             plan.append({
                 "capability": cap.value,

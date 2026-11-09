@@ -27,7 +27,7 @@ class SolverResult:
     assertions_count: int = 0
     solver_time_ms: int = 0
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "satisfiable": self.satisfiable,
             "model": self.model,

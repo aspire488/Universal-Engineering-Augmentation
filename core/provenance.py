@@ -234,7 +234,7 @@ class ProvenanceTracker:
         """Verify the integrity of a provenance record.
         Checks that the file hash matches current content.
         """
-        result = {"valid": True, "checks": []}
+        result: dict[str, Any] = {"valid": True, "checks": []}
 
         if os.path.exists(record.file_path):
             current_hash = compute_file_hash(record.file_path)
@@ -265,7 +265,7 @@ class ProvenanceTracker:
 
         return result
 
-    def _row_to_record(self, row) -> ProvenanceRecord:
+    def _row_to_record(self, row: Any) -> ProvenanceRecord:
         """Convert a database row to a ProvenanceRecord."""
         evidence_chain = json.loads(row["evidence_chain"]) if row["evidence_chain"] else []
         return ProvenanceRecord(

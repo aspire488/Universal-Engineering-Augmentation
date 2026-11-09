@@ -3,15 +3,17 @@
 import json
 import os
 import sqlite3
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 
 _ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(os.environ.get("AUGMENTATION_DB", str(_ROOT / "data" / "sqlite" / "augmentation.db")))
 SCHEMA_PATH = Path(os.environ.get("AUGMENTATION_SCHEMA", str(_ROOT / "data" / "sqlite" / "schema.sql")))
 
 
-def get_db():
+def get_db() -> sqlite3.Connection:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
@@ -20,7 +22,7 @@ def get_db():
     return conn
 
 
-def init_db():
+def init_db() -> None:
     conn = get_db()
     with open(SCHEMA_PATH) as f:
         conn.executescript(f.read())
@@ -28,7 +30,7 @@ def init_db():
 
 
 @contextmanager
-def log_event(event_type, project=None, session_id=None, **kwargs):
+def log_event(event_type: str, project: str | None = None, session_id: str | None = None, **kwargs: Any) -> Iterator[int | None]:
     conn = get_db()
     try:
         cursor = conn.execute(
@@ -50,7 +52,7 @@ def log_event(event_type, project=None, session_id=None, **kwargs):
         conn.close()
 
 
-def log_task(task_type, project, description, session_id=None, verification_level=None):
+def log_task(task_type: str, project: str, description: str, session_id: str | None = None, verification_level: str | None = None) -> int | None:
     conn = get_db()
     try:
         cursor = conn.execute(
@@ -64,7 +66,7 @@ def log_task(task_type, project, description, session_id=None, verification_leve
         conn.close()
 
 
-def complete_task(task_id, result=None, files_changed=None, risk_level=None):
+def complete_task(task_id: int, result: str | None = None, files_changed: Any = None, risk_level: str | None = None) -> None:
     conn = get_db()
     try:
         conn.execute(
@@ -77,7 +79,7 @@ def complete_task(task_id, result=None, files_changed=None, risk_level=None):
         conn.close()
 
 
-def log_verification(task_id, project, level, checks, passed=0, failed=0, skipped=0, duration_ms=0):
+def log_verification(task_id: int | None, project: str, level: str, checks: Any, passed: int = 0, failed: int = 0, skipped: int = 0, duration_ms: int = 0) -> int | None:
     conn = get_db()
     try:
         cursor = conn.execute(
@@ -92,7 +94,7 @@ def log_verification(task_id, project, level, checks, passed=0, failed=0, skippe
         conn.close()
 
 
-def log_candidate(candidate_id, project, problem, approach, worktree_path=None):
+def log_candidate(candidate_id: str, project: str, problem: str, approach: str, worktree_path: str | None = None) -> None:
     conn = get_db()
     try:
         conn.execute(
@@ -105,7 +107,7 @@ def log_candidate(candidate_id, project, problem, approach, worktree_path=None):
         conn.close()
 
 
-def update_candidate(candidate_id, **kwargs):
+def update_candidate(candidate_id: str, **kwargs: Any) -> None:
     conn = get_db()
     try:
         sets = []
@@ -122,7 +124,7 @@ def update_candidate(candidate_id, **kwargs):
         conn.close()
 
 
-def register_skill(name, project, category, description, preconditions=None, verification_level=None):
+def register_skill(name: str, project: str, category: str, description: str, preconditions: str | None = None, verification_level: str | None = None) -> None:
     conn = get_db()
     try:
         conn.execute(
@@ -135,7 +137,7 @@ def register_skill(name, project, category, description, preconditions=None, ver
         conn.close()
 
 
-def record_skill_use(name, success=True):
+def record_skill_use(name: str, success: bool = True) -> None:
     conn = get_db()
     try:
         if success:
@@ -153,7 +155,7 @@ def record_skill_use(name, success=True):
         conn.close()
 
 
-def get_project_stats(project):
+def get_project_stats(project: str) -> dict[str, Any]:
     conn = get_db()
     try:
         row = conn.execute(
@@ -172,7 +174,7 @@ def get_project_stats(project):
         conn.close()
 
 
-def get_recent_events(project=None, limit=50):
+def get_recent_events(project: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
     conn = get_db()
     try:
         if project:

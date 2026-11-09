@@ -22,7 +22,7 @@ class QueryResult:
     rows: list[dict[str, Any]]
     row_count: int
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "columns": self.columns,
             "rows": self.rows,

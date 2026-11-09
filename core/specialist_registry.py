@@ -88,7 +88,7 @@ class SpecialistMeta:
 
 class _EnumEncoder(json.JSONEncoder):
     """Handle Enum serialization in JSON."""
-    def default(self, obj):
+    def default(self, obj: Any) -> Any:
         if hasattr(obj, "value"):
             return obj.value
         return super().default(obj)
@@ -112,16 +112,17 @@ class SpecialistRegistry:
         self._dir = Path(registry_dir) if registry_dir else REGISTRY_DIR
         self._dir.mkdir(parents=True, exist_ok=True)
         self._index_path = self._dir / "index.json"
-        self._index: dict[str, dict] = self._load_index()
+        self._index: dict[str, dict[str, Any]] = self._load_index()
 
-    def _load_index(self) -> dict[str, dict]:
+    def _load_index(self) -> dict[str, dict[str, Any]]:
         """Load the specialist index from disk."""
         if self._index_path.exists():
             with open(self._index_path) as f:
-                return json.load(f)
+                index: dict[str, dict[str, Any]] = json.load(f)
+            return index
         return {}
 
-    def _save_index(self):
+    def _save_index(self) -> None:
         """Persist the specialist index to disk."""
         with open(self._index_path, "w") as f:
             json.dump(self._index, f, indent=2, cls=_EnumEncoder)
@@ -156,7 +157,7 @@ class SpecialistRegistry:
 
         return True
 
-    def get(self, name: str, domain: SpecialistDomain = None) -> SpecialistMeta | None:
+    def get(self, name: str, domain: SpecialistDomain | None = None) -> SpecialistMeta | None:
         """Get a specialist by name. If domain is None, searches all domains."""
         if domain:
             key = f"{domain.value}:{name}"
@@ -203,7 +204,7 @@ class SpecialistRegistry:
             results.append(SpecialistMeta.from_dict(v))
         return results
 
-    def disable(self, name: str, domain: SpecialistDomain = None):
+    def disable(self, name: str, domain: SpecialistDomain | None = None) -> bool:
         """Disable a specialist without removing it."""
         for k in self._index:
             if k.endswith(f":{name}"):
@@ -225,7 +226,7 @@ class SpecialistRegistry:
         for name, keys in by_name.items():
             if len(keys) > 1:
                 # Keep the one with the most capabilities
-                best = max(keys, k=lambda k: len(self._index[k].get("capabilities", [])))
+                best = max(keys, key=lambda k: len(self._index[k].get("capabilities", [])))
                 for k in keys:
                     if k != best:
                         del self._index[k]
@@ -236,8 +237,8 @@ class SpecialistRegistry:
 
     def stats(self) -> dict[str, Any]:
         """Registry statistics."""
-        domains = {}
-        caps = {}
+        domains: dict[str, int] = {}
+        caps: dict[str, int] = {}
         for v in self._index.values():
             d = v.get("domain", "unknown")
             domains[d] = domains.get(d, 0) + 1
@@ -249,17 +250,12 @@ class SpecialistRegistry:
             "by_capability": caps,
         }
 
-
-def _bump_version(self, version: str) -> str:
-    """Bump patch version."""
-    parts = version.split(".")
-    if len(parts) == 3:
-        parts[2] = str(int(parts[2]) + 1)
-    return ".".join(parts)
-
-
-# Attach as method
-SpecialistRegistry._bump_version = _bump_version
+    def _bump_version(self, version: str) -> str:
+        """Bump patch version."""
+        parts = version.split(".")
+        if len(parts) == 3:
+            parts[2] = str(int(parts[2]) + 1)
+        return ".".join(parts)
 
 
 # ─── Built-in specialist definitions ───
@@ -383,7 +379,7 @@ BUILTIN_SPECIALISTS = [
 ]
 
 
-def register_builtins(registry: SpecialistRegistry = None) -> SpecialistRegistry:
+def register_builtins(registry: SpecialistRegistry | None = None) -> SpecialistRegistry:
     """Register all built-in specialists. Returns the registry."""
     registry = registry or SpecialistRegistry()
     for spec in BUILTIN_SPECIALISTS:

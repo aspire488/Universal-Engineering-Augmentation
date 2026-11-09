@@ -114,15 +114,15 @@ class DeterministicScorer:
         self._weights = weights or self.DEFAULT_WEIGHTS.copy()
         self._metrics: list[MetricEvidence] = []
 
-    def add_metric(self, metric: MetricEvidence):
+    def add_metric(self, metric: MetricEvidence) -> None:
         """Add a metric evidence point."""
         self._metrics.append(metric)
 
-    def add_metrics(self, metrics: list[MetricEvidence]):
+    def add_metrics(self, metrics: list[MetricEvidence]) -> None:
         """Add multiple metric evidence points."""
         self._metrics.extend(metrics)
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all collected metrics."""
         self._metrics.clear()
 
@@ -163,8 +163,8 @@ class DeterministicScorer:
         # Calculate overall score (weighted average)
         total_weight = 0.0
         weighted_sum = 0.0
-        for dim, score in dimension_scores.items():
-            dim_enum = ScoreDimension(dim)
+        for dim_name, score in dimension_scores.items():
+            dim_enum = ScoreDimension(dim_name)
             w = self._weights.get(dim_enum, 1.0)
             weighted_sum += score * w
             total_weight += w
@@ -180,12 +180,12 @@ class DeterministicScorer:
         # Identify warnings
         warnings = []
         recommendations = []
-        for dim, score in dimension_scores.items():
+        for dim_name, score in dimension_scores.items():
             if score < 0.5:
-                warnings.append(f"{dim}: score {score:.2f} is below 0.5 threshold")
-                recommendations.append(f"Improve {dim} — currently at {score:.2f}")
+                warnings.append(f"{dim_name}: score {score:.2f} is below 0.5 threshold")
+                recommendations.append(f"Improve {dim_name} — currently at {score:.2f}")
             elif score < 0.7:
-                warnings.append(f"{dim}: score {score:.2f} could be improved")
+                warnings.append(f"{dim_name}: score {score:.2f} could be improved")
 
         if confidence < 0.3:
             warnings.append(f"Low confidence ({confidence:.2f}) — need more evidence sources")
@@ -199,7 +199,7 @@ class DeterministicScorer:
             recommendations=recommendations,
         )
 
-    def score_from_verification(self, verification_result) -> ScoreResult:
+    def score_from_verification(self, verification_result: Any) -> ScoreResult:
         """Score from a verification.py VerificationResult."""
         self.clear()
         if verification_result.passed + verification_result.failed == 0:

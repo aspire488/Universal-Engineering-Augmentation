@@ -46,7 +46,7 @@ dev = [
 strict = true
 
 [[tool.mypy.overrides]]
-module = ["tree_sitter.*", "duckdb.*", "z3.*"]
+module = ["tree_sitter.*", "duckdb.*", "z3.*", "laya.*"]
 ignore_missing_imports = true
 
 [project.scripts]

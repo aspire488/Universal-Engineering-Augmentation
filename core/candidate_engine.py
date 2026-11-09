@@ -47,7 +47,7 @@ def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: st
     return result_dict
 
 
-def select_winner(candidates: list[dict[str, Any]]) -> dict | None:
+def select_winner(candidates: list[dict[str, Any]]) -> dict[str, Any] | None:
     """Select the best candidate based on verification results."""
     scored = []
     for c in candidates:
@@ -85,7 +85,7 @@ def apply_winner(winner: dict[str, Any], target_repo: str) -> bool:
     return ok
 
 
-def cleanup_candidates(candidates: list[dict[str, Any]], repo_path: str):
+def cleanup_candidates(candidates: list[dict[str, Any]], repo_path: str) -> None:
     """Remove all candidate worktrees."""
     for c in candidates:
         if c.get("worktree") and c["id"] not in [c.get("id") for c in candidates if c.get("status") == "winner"]:

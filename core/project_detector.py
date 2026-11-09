@@ -58,7 +58,8 @@ def _load_profile(profile_name: str) -> dict[str, Any]:
     profile_path = PROFILES_DIR / f"{profile_name}.json"
     if profile_path.exists():
         with open(profile_path) as f:
-            return json.load(f)
+            profile: dict[str, Any] = json.load(f)
+        return profile
     return _default_profile(profile_name)
 
 

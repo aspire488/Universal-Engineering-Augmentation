@@ -378,3 +378,42 @@ class TestVersion:
         parts = __version__.split(".")
         assert len(parts) == 3
         assert all(p.isdigit() for p in parts)
+
+
+class TestSpecialistRegistryDeduplicate:
+    """Regression: deduplicate() used max(..., k=...) and raised TypeError."""
+
+    def test_deduplicate_keeps_most_capable(self, tmp_path):
+        from core.specialist_registry import (
+            SpecialistCapability,
+            SpecialistDomain,
+            SpecialistMeta,
+            SpecialistRegistry,
+        )
+
+        registry = SpecialistRegistry(str(tmp_path))
+        common = {"description": "d", "source": "s", "license": "MIT"}
+        registry.register(SpecialistMeta(
+            name="dup", domain=SpecialistDomain.TESTING,
+            capabilities=[SpecialistCapability.VERIFY], **common))
+        registry.register(SpecialistMeta(
+            name="dup", domain=SpecialistDomain.DEBUGGING,
+            capabilities=[SpecialistCapability.VERIFY, SpecialistCapability.DEBUG], **common))
+
+        assert registry.deduplicate() == 1
+        assert registry.get("dup").domain == SpecialistDomain.DEBUGGING
+
+    def test_bump_version_on_changed_reregistration(self, tmp_path):
+        from core.specialist_registry import (
+            SpecialistCapability,
+            SpecialistDomain,
+            SpecialistMeta,
+            SpecialistRegistry,
+        )
+
+        registry = SpecialistRegistry(str(tmp_path))
+        common = {"domain": SpecialistDomain.TESTING, "source": "s", "license": "MIT",
+                  "capabilities": [SpecialistCapability.VERIFY]}
+        registry.register(SpecialistMeta(name="v", description="one", **common))
+        registry.register(SpecialistMeta(name="v", description="two", **common))
+        assert registry.get("v").version == "1.0.1"

@@ -61,7 +61,10 @@ class MutantGenerator:
                 # Replace 'not x' with 'x'
                 col = node.operand.col_offset
                 end_col = node.end_col_offset
-                mutated_line = orig[:col] + ast.get_source_segment(self.source, node.operand) + orig[end_col:]
+                segment = ast.get_source_segment(self.source, node.operand)
+                if segment is None:
+                    continue
+                mutated_line = orig[:col] + segment + orig[end_col:]
                 mutants.append(Mutation(
                     id=f"mut-{mid}", file=self.filepath, line=line,
                     original=orig.rstrip(), mutated=mutated_line.rstrip(),
@@ -108,11 +111,11 @@ class MutantGenerator:
 
             # Swap binary operators
             if "swap_binary_op" in operators and isinstance(node, ast.BinOp):
-                swap_map = {
+                binop_swaps = {
                     (ast.Add, ast.Sub), (ast.Mult, ast.Div),
                     (ast.LShift, ast.RShift), (ast.BitAnd, ast.BitOr),
                 }
-                for a, b in swap_map:
+                for a, b in binop_swaps:
                     if isinstance(node.op, a):
                         line = node.lineno
                         orig = self.lines[line - 1]
@@ -152,7 +155,7 @@ def apply_mutation(source: str, mutation: Mutation) -> str:
     return "".join(lines)
 
 
-def run_tests(test_command: str, cwd: str, timeout: int = 60) -> tuple:
+def run_tests(test_command: str, cwd: str, timeout: int = 60) -> tuple[bool, str]:
     """Run tests and return (passed, output)."""
     try:
         result = subprocess.run(
@@ -224,14 +227,14 @@ def run_mutation_testing(
             mut_file.unlink()
 
     total = len(results)
-    killed = sum(1 for r in results if r["killed"])
-    survived = total - killed
-    score = (killed / total * 100) if total > 0 else 0
+    killed_count = sum(1 for r in results if r["killed"])
+    survived = total - killed_count
+    score = (killed_count / total * 100) if total > 0 else 0
 
     return {
         "file": filepath,
         "total_mutants": total,
-        "killed": killed,
+        "killed": killed_count,
         "survived": survived,
         "mutation_score": round(score, 1),
         "duration_ms": int((time.time() - start) * 1000),
@@ -268,7 +271,7 @@ def batch_mutation_test(
     }
 
 
-def _op_to_str(op_type) -> str:
+def _op_to_str(op_type: type[ast.cmpop]) -> str:
     map_ = {
         ast.Lt: "<", ast.Gt: ">", ast.LtE: "<=", ast.GtE: ">=",
         ast.Eq: "==", ast.NotEq: "!=",
@@ -276,7 +279,7 @@ def _op_to_str(op_type) -> str:
     return map_.get(op_type, "==")
 
 
-def _binop_to_str(op) -> str:
+def _binop_to_str(op: type[ast.operator]) -> str:
     map_ = {
         ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Div: "/",
         ast.LShift: "<<", ast.RShift: ">>",

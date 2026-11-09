@@ -23,7 +23,7 @@ class PropertyResult:
     duration_ms: int = 0
     error: str = ""
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "test_name": self.test_name,
             "passed": self.passed,
@@ -35,7 +35,7 @@ class PropertyResult:
 
 
 def run_property_test(
-    test_func: Callable,
+    test_func: Callable[..., Any],
     max_examples: int = 100,
     deadline: int = 500,
 ) -> PropertyResult:
@@ -85,6 +85,8 @@ def run_property_test(
 def run_property_file(filepath: str, max_examples: int = 50) -> dict[str, Any]:
     """Run all property tests in a file (functions starting with test_)."""
     spec = importlib.util.spec_from_file_location("test_module", filepath)
+    if spec is None or spec.loader is None:
+        return {"error": f"Failed to load {filepath}: no import spec"}
     module = importlib.util.module_from_spec(spec)
     try:
         spec.loader.exec_module(module)

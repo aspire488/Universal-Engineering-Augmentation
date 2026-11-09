@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -20,7 +21,7 @@ class VerificationResult:
         self.skipped = 0
         self.duration_ms = 0
 
-    def add(self, name: str, passed: bool, detail: str = "", skipped: bool = False):
+    def add(self, name: str, passed: bool, detail: str = "", skipped: bool = False) -> None:
         self.checks.append({"name": name, "passed": passed, "detail": detail, "skipped": skipped})
         if skipped:
             self.skipped += 1
@@ -29,7 +30,7 @@ class VerificationResult:
         else:
             self.failed += 1
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "level": self.level,
             "checks": self.checks,
@@ -156,7 +157,7 @@ def verify_structural(project_root: str, profile: dict[str, Any] | None = None) 
     return result
 
 
-VERIFICATION_LEVELS = {
+VERIFICATION_LEVELS: dict[str, list[Callable[..., VerificationResult]]] = {
     "minimal": [verify_syntax],
     "standard": [verify_syntax, verify_typecheck, verify_tests],
     "strict": [verify_syntax, verify_typecheck, verify_tests, verify_integration, verify_structural],

@@ -58,7 +58,7 @@ def find_emitters(file_path: Path) -> list[str]:
 
 def find_test_files(module_path: Path, root: Path) -> list[Path]:
     """Find test files that might test a given module."""
-    tests = []
+    tests: list[Path] = []
     test_dir = root / "tests"
     if not test_dir.exists():
         return tests
@@ -151,7 +151,7 @@ def generate_impact_report(root: Path, target_file: str | None = None, target_sy
     graph = build_import_graph(root)
     reverse_graph = build_reverse_import_graph(graph)
     
-    report = {
+    report: dict[str, Any] = {
         "total_modules": len(graph),
         "total_dependencies": sum(len(v) for v in graph.values()),
     }
