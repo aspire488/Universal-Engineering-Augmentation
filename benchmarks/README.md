@@ -2,12 +2,12 @@
 
 `run_benchmark.py` measures a small fixed corpus of deterministic UEA capabilities:
 
-- Tree-sitter structural parsing
+- Tree-sitter structural parsing for Python, Go, and Rust
 - Z3 pre/post-condition verification
 - Hypothesis property testing
 - the existing minimal verification pipeline
 
-Each run emits machine-readable JSON with elapsed milliseconds and capability results.
+Each run emits machine-readable JSON with elapsed milliseconds and capability results. The Go/Rust measurement parses temporary fixtures and reports extracted functions, types, imports, and syntax-tree node counts for each language; fixtures are recreated on every run and do not modify the repository.
 
 ## Run
 
