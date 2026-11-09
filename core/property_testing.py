@@ -82,7 +82,7 @@ def run_property_test(
         )
 
 
-def run_property_file(filepath: str, max_examples: int = 50) -> Dict:
+def run_property_file(filepath: str, max_examples: int = 50) -> dict:
     """Run all property tests in a file (functions starting with test_)."""
     spec = importlib.util.spec_from_file_location("test_module", filepath)
     module = importlib.util.module_from_spec(spec)
@@ -149,7 +149,7 @@ def test_{func_name}_deterministic(value):
 '''
 
 
-def batch_property_test(filepaths: List[str], max_examples: int = 30) -> Dict:
+def batch_property_test(filepaths: list[str], max_examples: int = 30) -> dict:
     """Run property tests across multiple files."""
     total_passed = 0
     total_failed = 0

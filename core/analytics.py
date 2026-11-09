@@ -18,8 +18,8 @@ DB_PATH = Path(os.environ.get("AUGMENTATION_DB", str(_ROOT / "data" / "sqlite" /
 
 @dataclass
 class QueryResult:
-    columns: List[str]
-    rows: List[Dict]
+    columns: list[str]
+    rows: list[dict]
     row_count: int
 
     def to_dict(self):
@@ -57,7 +57,7 @@ def query(sql: str, db_path: str = None) -> QueryResult:
             return QueryResult(columns=[], rows=[{"error": str(e2)}], row_count=0)
 
 
-def get_event_summary(project: str = None) -> Dict:
+def get_event_summary(project: str = None) -> dict:
     """Get event summary statistics."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -87,7 +87,7 @@ def get_event_summary(project: str = None) -> Dict:
         return {"error": str(e)}
 
 
-def get_task_metrics(project: str = None) -> Dict:
+def get_task_metrics(project: str = None) -> dict:
     """Get task completion metrics."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -116,7 +116,7 @@ def get_task_metrics(project: str = None) -> Dict:
         return {"error": str(e)}
 
 
-def get_verification_trends() -> Dict:
+def get_verification_trends() -> dict:
     """Get verification run trends over time."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -144,7 +144,7 @@ def get_verification_trends() -> Dict:
         return {"error": str(e)}
 
 
-def execute_custom(sql: str) -> Dict:
+def execute_custom(sql: str) -> dict:
     """Execute arbitrary SQL against the augmentation DB."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}

@@ -29,11 +29,11 @@ class EvidenceNode:
     passed: bool               # did it pass?
     detail: str                # human-readable detail
     tool_version: str = "1.0"  # version of the tool
-    metrics: Dict[str, Any] = field(default_factory=dict)  # numeric measurements
+    metrics: dict[str, Any] = field(default_factory=dict)  # numeric measurements
     timestamp: float = field(default_factory=time.time)
     duration_ms: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -46,16 +46,16 @@ class ProvenanceRecord:
     git_sha: str                    # git SHA at time of action
     git_branch: str                 # git branch
     timestamp: float                # when the action happened
-    specialist: Optional[str]       # which specialist was involved (if any)
-    specialist_hash: Optional[str]  # hash of specialist definition
+    specialist: str | None       # which specialist was involved (if any)
+    specialist_hash: str | None  # hash of specialist definition
     tool: str                       # primary tool used
-    evidence_chain: List[EvidenceNode] = field(default_factory=list)
+    evidence_chain: list[EvidenceNode] = field(default_factory=list)
     decision: str = ""              # what was decided
     outcome: str = ""               # what actually happened
     verification_level: str = "standard"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["evidence_chain"] = [e.to_dict() for e in self.evidence_chain]
         return d
@@ -78,7 +78,7 @@ def compute_content_hash(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
-def get_git_info(workdir: str = None) -> Dict[str, str]:
+def get_git_info(workdir: str = None) -> dict[str, str]:
     """Get current git SHA and branch."""
     workdir = workdir or os.getcwd()
     result = {"sha": "unknown", "branch": "unknown"}
@@ -139,7 +139,7 @@ class ProvenanceTracker:
 
     def __init__(self, workdir: str = None):
         self._workdir = workdir or os.getcwd()
-        self._records: List[ProvenanceRecord] = []
+        self._records: list[ProvenanceRecord] = []
 
     def start_record(self, file_path: str, tool: str = "unknown",
                      specialist: str = None, specialist_hash: str = None) -> ProvenanceRecord:
@@ -187,7 +187,7 @@ class ProvenanceTracker:
         finally:
             conn.close()
 
-    def get_record(self, record_id: str) -> Optional[ProvenanceRecord]:
+    def get_record(self, record_id: str) -> ProvenanceRecord | None:
         """Retrieve a provenance record by ID."""
         import sqlite3
         conn = sqlite3.connect(str(DB_PATH))
@@ -202,7 +202,7 @@ class ProvenanceTracker:
         finally:
             conn.close()
 
-    def get_records_for_file(self, file_path: str, limit: int = 50) -> List[ProvenanceRecord]:
+    def get_records_for_file(self, file_path: str, limit: int = 50) -> list[ProvenanceRecord]:
         """Get all provenance records for a file."""
         import sqlite3
         conn = sqlite3.connect(str(DB_PATH))
@@ -217,7 +217,7 @@ class ProvenanceTracker:
         finally:
             conn.close()
 
-    def get_records_by_specialist(self, specialist: str, limit: int = 50) -> List[ProvenanceRecord]:
+    def get_records_by_specialist(self, specialist: str, limit: int = 50) -> list[ProvenanceRecord]:
         """Get all provenance records for a specialist."""
         import sqlite3
         conn = sqlite3.connect(str(DB_PATH))
@@ -231,7 +231,7 @@ class ProvenanceTracker:
         finally:
             conn.close()
 
-    def verify_integrity(self, record: ProvenanceRecord) -> Dict[str, Any]:
+    def verify_integrity(self, record: ProvenanceRecord) -> dict[str, Any]:
         """Verify the integrity of a provenance record.
         Checks that the file hash matches current content.
         """

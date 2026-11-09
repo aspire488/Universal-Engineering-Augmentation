@@ -8,7 +8,7 @@ from typing import Dict, List, Set, Tuple, Optional
 from collections import defaultdict
 
 
-def find_imports(file_path: Path) -> Set[str]:
+def find_imports(file_path: Path) -> set[str]:
     """Extract import targets from a Python file."""
     imports = set()
     try:
@@ -28,7 +28,7 @@ def find_imports(file_path: Path) -> Set[str]:
     return imports
 
 
-def find_function_calls(file_path: Path) -> Set[str]:
+def find_function_calls(file_path: Path) -> set[str]:
     """Extract function/method calls from a Python file."""
     calls = set()
     try:
@@ -40,7 +40,7 @@ def find_function_calls(file_path: Path) -> Set[str]:
     return calls
 
 
-def find_emitters(file_path: Path) -> List[str]:
+def find_emitters(file_path: Path) -> list[str]:
     """Find emit_runtime_trace() calls in a file."""
     emitters = []
     try:
@@ -56,7 +56,7 @@ def find_emitters(file_path: Path) -> List[str]:
     return emitters
 
 
-def find_test_files(module_path: Path, root: Path) -> List[Path]:
+def find_test_files(module_path: Path, root: Path) -> list[Path]:
     """Find test files that might test a given module."""
     tests = []
     test_dir = root / "tests"
@@ -76,7 +76,7 @@ def find_test_files(module_path: Path, root: Path) -> List[Path]:
     return tests
 
 
-def build_import_graph(root: Path) -> Dict[str, Set[str]]:
+def build_import_graph(root: Path) -> dict[str, set[str]]:
     """Build a complete import graph for a project root."""
     graph = defaultdict(set)
     for py_file in root.rglob("*.py"):
@@ -95,7 +95,7 @@ def build_import_graph(root: Path) -> Dict[str, Set[str]]:
     return dict(graph)
 
 
-def build_reverse_import_graph(graph: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
+def build_reverse_import_graph(graph: dict[str, set[str]]) -> dict[str, set[str]]:
     """Build reverse import graph (who imports me)."""
     reverse = defaultdict(set)
     for module, deps in graph.items():
@@ -104,7 +104,7 @@ def build_reverse_import_graph(graph: Dict[str, Set[str]]) -> Dict[str, Set[str]
     return dict(reverse)
 
 
-def analyze_symbol_impact(symbol_name: str, reverse_graph: Dict[str, Set[str]]) -> Dict:
+def analyze_symbol_impact(symbol_name: str, reverse_graph: dict[str, set[str]]) -> dict:
     """Analyze impact of changing a symbol."""
     direct_callers = reverse_graph.get(symbol_name, set())
     transitive = set()
@@ -125,7 +125,7 @@ def analyze_symbol_impact(symbol_name: str, reverse_graph: Dict[str, Set[str]]) 
     }
 
 
-def analyze_file_impact(file_path: Path, root: Path) -> Dict:
+def analyze_file_impact(file_path: Path, root: Path) -> dict:
     """Analyze impact of changing a file."""
     rel = file_path.relative_to(root) if file_path.is_relative_to(root) else file_path
     module_key = str(rel).replace("\\", "/").replace("/", ".").replace(".py", "")
@@ -148,7 +148,7 @@ def analyze_file_impact(file_path: Path, root: Path) -> Dict:
     }
 
 
-def generate_impact_report(root: Path, target_file: str = None, target_symbol: str = None) -> Dict:
+def generate_impact_report(root: Path, target_file: str = None, target_symbol: str = None) -> dict:
     """Generate a full impact report for a project root."""
     graph = build_import_graph(root)
     reverse_graph = build_reverse_import_graph(graph)

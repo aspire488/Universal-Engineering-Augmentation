@@ -8,7 +8,7 @@ from typing import Dict, List, Set, Optional
 from collections import defaultdict
 
 
-def find_references(symbol: str, root: Path) -> List[Dict]:
+def find_references(symbol: str, root: Path) -> list[dict]:
     """Find all references to a symbol across the codebase."""
     references = []
     
@@ -37,7 +37,7 @@ def find_references(symbol: str, root: Path) -> List[Dict]:
     return references
 
 
-def find_class_definitions(root: Path) -> Dict[str, str]:
+def find_class_definitions(root: Path) -> dict[str, str]:
     """Find all class definitions and their file locations."""
     classes = {}
     
@@ -54,7 +54,7 @@ def find_class_definitions(root: Path) -> Dict[str, str]:
     return classes
 
 
-def find_function_definitions(root: Path) -> Dict[str, str]:
+def find_function_definitions(root: Path) -> dict[str, str]:
     """Find all function definitions and their file locations."""
     functions = {}
     
@@ -71,7 +71,7 @@ def find_function_definitions(root: Path) -> Dict[str, str]:
     return functions
 
 
-def analyze_event_emitters(root: Path) -> Dict[str, List[Dict]]:
+def analyze_event_emitters(root: Path) -> dict[str, list[dict]]:
     """Analyze all emit_runtime_trace() calls and their event types."""
     emitters = defaultdict(list)
     
@@ -95,7 +95,7 @@ def analyze_event_emitters(root: Path) -> Dict[str, List[Dict]]:
     return dict(emitters)
 
 
-def analyze_test_coverage(root: Path) -> Dict[str, List[str]]:
+def analyze_test_coverage(root: Path) -> dict[str, list[str]]:
     """Map test files to the modules they test."""
     coverage = defaultdict(list)
     
@@ -122,7 +122,7 @@ def analyze_test_coverage(root: Path) -> Dict[str, List[str]]:
     return dict(coverage)
 
 
-def generate_comprehensive_report(root: Path) -> Dict:
+def generate_comprehensive_report(root: Path) -> dict:
     """Generate a comprehensive impact and regression report for a project."""
     classes = find_class_definitions(root)
     functions = find_function_definitions(root)

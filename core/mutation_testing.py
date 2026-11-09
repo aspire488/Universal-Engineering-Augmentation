@@ -45,7 +45,7 @@ class MutantGenerator:
         self.filepath = filepath
         self.lines = source.splitlines(keepends=True)
 
-    def generate_mutants(self, operators: List[str] = None) -> List[Mutation]:
+    def generate_mutants(self, operators: list[str] = None) -> list[Mutation]:
         operators = operators or MUTATION_OPERATORS
         mutants = []
         mid = 0
@@ -176,7 +176,7 @@ def run_mutation_testing(
     cwd: str = None,
     max_mutants: int = 20,
     timeout: int = 60,
-) -> Dict:
+) -> dict:
     """Run mutation testing on a file."""
     source = Path(filepath).read_text(encoding="utf-8")
     generator = MutantGenerator(source, filepath)
@@ -242,11 +242,11 @@ def run_mutation_testing(
 
 
 def batch_mutation_test(
-    filepaths: List[str],
+    filepaths: list[str],
     test_command: str,
     cwd: str = None,
     max_mutants: int = 10,
-) -> Dict:
+) -> dict:
     """Run mutation testing across multiple files."""
     all_results = []
     total_killed = 0

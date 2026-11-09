@@ -35,7 +35,7 @@ class ScaleDecision:
     estimated_files: int
     estimated_lines: int
     architectural_impact: bool
-    risk_factors: List[str]
+    risk_factors: list[str]
     recommended_approach: str
     verification_tier: str
     max_candidates: int  # 0 = no candidates needed
@@ -43,7 +43,7 @@ class ScaleDecision:
     decomposition_suggested: bool
     rationale: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "level": self.level.value,
             "estimated_files": self.estimated_files,
@@ -73,8 +73,8 @@ class ScaleDecider:
         print(decision.verification_tier)  # "security"
     """
 
-    def decide(self, files_changed: List[str] = None, lines_changed: int = 0,
-               task_description: str = "", risk_signals: List[str] = None) -> ScaleDecision:
+    def decide(self, files_changed: list[str] = None, lines_changed: int = 0,
+               task_description: str = "", risk_signals: list[str] = None) -> ScaleDecision:
         """Make a scale decision based on available information."""
         files_changed = files_changed or []
         risk_signals = risk_signals or []
@@ -113,8 +113,8 @@ class ScaleDecider:
             rationale=rationale,
         )
 
-    def _detect_risk_factors(self, description: str, files: List[str],
-                              signals: List[str]) -> List[str]:
+    def _detect_risk_factors(self, description: str, files: list[str],
+                              signals: list[str]) -> list[str]:
         """Detect risk factors from task description and file list."""
         risks = []
         desc = description.lower()
@@ -148,7 +148,7 @@ class ScaleDecider:
 
         return list(set(risks))
 
-    def _has_architectural_impact(self, files: List[str], description: str) -> bool:
+    def _has_architectural_impact(self, files: list[str], description: str) -> bool:
         """Check if the task has architectural impact."""
         arch_keywords = ["architecture", "system", "infrastructure", "module", "boundary",
                          "interface", "api", "protocol", "pattern"]
@@ -168,7 +168,7 @@ class ScaleDecider:
         return False
 
     def _classify_scale(self, file_count: int, line_count: int,
-                         arch_impact: bool, risk_factors: List[str]) -> ScaleLevel:
+                         arch_impact: bool, risk_factors: list[str]) -> ScaleLevel:
         """Classify scale based on metrics."""
         has_security = "security-sensitive" in risk_factors
         has_production = "production-system" in risk_factors
@@ -188,7 +188,7 @@ class ScaleDecider:
         return ScaleLevel.SMALL
 
     def _recommend_approach(self, level: ScaleLevel, arch_impact: bool,
-                             risk_factors: List[str]) -> str:
+                             risk_factors: list[str]) -> str:
         """Recommend execution approach based on scale."""
         if level == ScaleLevel.SMALL:
             return "direct"
@@ -202,7 +202,7 @@ class ScaleDecider:
             return "parallel-specialists+verification"
         return "direct"
 
-    def _recommend_verification(self, level: ScaleLevel, risk_factors: List[str]) -> str:
+    def _recommend_verification(self, level: ScaleLevel, risk_factors: list[str]) -> str:
         """Recommend verification tier based on scale and risk."""
         if "security-sensitive" in risk_factors:
             return "security"
@@ -224,8 +224,8 @@ class ScaleDecider:
             return 4
         return 5
 
-    def _build_rationale(self, level: ScaleLevel, files: List[str],
-                          lines: int, risks: List[str], arch: bool) -> str:
+    def _build_rationale(self, level: ScaleLevel, files: list[str],
+                          lines: int, risks: list[str], arch: bool) -> str:
         """Build human-readable rationale for the decision."""
         parts = [f"Scale={level.value}"]
         if files:

@@ -47,7 +47,7 @@ class MetricEvidence:
     weight: float = 1.0   # importance weight
     detail: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["dimension"] = self.dimension.value
         return d
@@ -58,12 +58,12 @@ class ScoreResult:
     """Complete scoring result with evidence chain."""
     overall_score: float           # 0.0 to 1.0
     confidence: float              # 0.0 to 1.0 (how confident are we)
-    dimension_scores: Dict[str, float]  # per-dimension scores
-    metrics: List[MetricEvidence]  # all collected metrics
-    warnings: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    dimension_scores: dict[str, float]  # per-dimension scores
+    metrics: list[MetricEvidence]  # all collected metrics
+    warnings: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "overall_score": self.overall_score,
             "confidence": self.confidence,
@@ -100,7 +100,7 @@ class DeterministicScorer:
     """
 
     # Default dimension weights
-    DEFAULT_WEIGHTS: Dict[ScoreDimension, float] = {
+    DEFAULT_WEIGHTS: dict[ScoreDimension, float] = {
         ScoreDimension.CORRECTNESS: 3.0,
         ScoreDimension.MAINTAINABILITY: 2.0,
         ScoreDimension.SECURITY: 2.5,
@@ -111,15 +111,15 @@ class DeterministicScorer:
         ScoreDimension.DOCUMENTATION: 1.0,
     }
 
-    def __init__(self, weights: Dict[ScoreDimension, float] = None):
+    def __init__(self, weights: dict[ScoreDimension, float] = None):
         self._weights = weights or self.DEFAULT_WEIGHTS.copy()
-        self._metrics: List[MetricEvidence] = []
+        self._metrics: list[MetricEvidence] = []
 
     def add_metric(self, metric: MetricEvidence):
         """Add a metric evidence point."""
         self._metrics.append(metric)
 
-    def add_metrics(self, metrics: List[MetricEvidence]):
+    def add_metrics(self, metrics: list[MetricEvidence]):
         """Add multiple metric evidence points."""
         self._metrics.extend(metrics)
 
@@ -147,7 +147,7 @@ class DeterministicScorer:
             )
 
         # Group by dimension
-        by_dimension: Dict[ScoreDimension, List[MetricEvidence]] = {}
+        by_dimension: dict[ScoreDimension, list[MetricEvidence]] = {}
         for m in self._metrics:
             by_dimension.setdefault(m.dimension, []).append(m)
 
@@ -235,7 +235,7 @@ class DeterministicScorer:
 
         return self.calculate()
 
-    def score_from_test_results(self, test_output: Dict[str, Any]) -> ScoreResult:
+    def score_from_test_results(self, test_output: dict[str, Any]) -> ScoreResult:
         """Score from test results dict with passed/failed/skipped counts."""
         self.clear()
         passed = test_output.get("passed", 0)
@@ -273,7 +273,7 @@ class DeterministicScorer:
 
         return self.calculate()
 
-    def score_from_complexity(self, complexity_data: Dict[str, Any]) -> ScoreResult:
+    def score_from_complexity(self, complexity_data: dict[str, Any]) -> ScoreResult:
         """Score from complexity analysis data."""
         self.clear()
 

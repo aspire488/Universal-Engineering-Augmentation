@@ -9,7 +9,7 @@ from .verification import run_verification
 from .event_log import log_candidate, update_candidate, get_db
 
 
-def propose_candidates(problem: str, approaches: List[str], repo_path: str, base_branch: str = "main") -> List[Dict]:
+def propose_candidates(problem: str, approaches: list[str], repo_path: str, base_branch: str = "main") -> list[dict]:
     """Create candidate worktrees for each approach."""
     candidates = []
     for i, approach in enumerate(approaches):
@@ -26,7 +26,7 @@ def propose_candidates(problem: str, approaches: List[str], repo_path: str, base
     return candidates
 
 
-def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: str = "standard", profile: Dict = None) -> Dict:
+def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: str = "standard", profile: dict = None) -> dict:
     """Run verification on a candidate worktree."""
     with get_db() as conn:
         row = conn.execute("SELECT worktree_path FROM candidates WHERE id=?", (candidate_id,)).fetchone()
@@ -46,7 +46,7 @@ def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: st
     return result_dict
 
 
-def select_winner(candidates: List[Dict]) -> Optional[Dict]:
+def select_winner(candidates: list[dict]) -> dict | None:
     """Select the best candidate based on verification results."""
     scored = []
     for c in candidates:
@@ -69,7 +69,7 @@ def select_winner(candidates: List[Dict]) -> Optional[Dict]:
     return winner
 
 
-def apply_winner(winner: Dict, target_repo: str) -> bool:
+def apply_winner(winner: dict, target_repo: str) -> bool:
     """Apply the winning candidate to the target repository."""
     wt_path = winner.get("worktree")
     if not wt_path:
@@ -84,7 +84,7 @@ def apply_winner(winner: Dict, target_repo: str) -> bool:
     return ok
 
 
-def cleanup_candidates(candidates: List[Dict], repo_path: str):
+def cleanup_candidates(candidates: list[dict], repo_path: str):
     """Remove all candidate worktrees."""
     for c in candidates:
         if c.get("worktree") and c["id"] not in [c.get("id") for c in candidates if c.get("status") == "winner"]:

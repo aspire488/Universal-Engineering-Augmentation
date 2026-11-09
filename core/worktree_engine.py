@@ -33,7 +33,7 @@ def remove_worktree(repo_path: str, branch_name: str):
     _run(f'git branch -D {branch_name}', cwd=repo_path)
 
 
-def list_worktrees(repo_path: str) -> List[dict]:
+def list_worktrees(repo_path: str) -> list[dict]:
     """List all active worktrees."""
     ok, out, _ = _run("git worktree list --porcelain", cwd=repo_path)
     if not ok:

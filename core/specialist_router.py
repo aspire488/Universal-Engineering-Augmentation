@@ -67,7 +67,7 @@ class DeterministicCapability(Enum):
 
 
 # Mapping: task type → which deterministic capabilities handle it
-TASK_DETERMINISTIC_MAP: Dict[TaskType, List[DeterministicCapability]] = {
+TASK_DETERMINISTIC_MAP: dict[TaskType, list[DeterministicCapability]] = {
     TaskType.BUG_FIX: [
         DeterministicCapability.SYNTAX_CHECK,
         DeterministicCapability.TEST_EXECUTION,
@@ -123,7 +123,7 @@ TASK_DETERMINISTIC_MAP: Dict[TaskType, List[DeterministicCapability]] = {
 }
 
 # Mapping: task type → specialist domains that might help
-TASK_SPECIALIST_MAP: Dict[TaskType, List[SpecialistDomain]] = {
+TASK_SPECIALIST_MAP: dict[TaskType, list[SpecialistDomain]] = {
     TaskType.BUG_FIX: [SpecialistDomain.DEBUGGING],
     TaskType.FEATURE: [SpecialistDomain.BACKEND, SpecialistDomain.FRONTEND],
     TaskType.REFACTOR: [SpecialistDomain.ARCHITECTURE, SpecialistDomain.CODE_QUALITY],
@@ -144,14 +144,14 @@ class RoutingDecision:
     """The router's decision for a task."""
     task_type: TaskType
     complexity: TaskComplexity
-    deterministic_capabilities: List[DeterministicCapability]
-    specialist: Optional[SpecialistMeta]
+    deterministic_capabilities: list[DeterministicCapability]
+    specialist: SpecialistMeta | None
     specialist_reason: str
     verification_level: str
-    exclusions: List[str]
+    exclusions: list[str]
     needs_candidates: bool  # whether to create candidate worktrees
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "task_type": self.task_type.value,
             "complexity": self.complexity.value,
@@ -170,10 +170,10 @@ class DeterministicEvidence:
     tool: DeterministicCapability
     passed: bool
     detail: str
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
     duration_ms: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "tool": self.tool.value,
             "passed": self.passed,
@@ -313,7 +313,7 @@ class SpecialistRouter:
             return TaskComplexity.CRITICAL
 
     def _needs_specialist(self, task_type: TaskType, complexity: TaskComplexity,
-                          det_caps: List[DeterministicCapability]) -> Tuple[Optional[SpecialistMeta], str]:
+                          det_caps: list[DeterministicCapability]) -> tuple[SpecialistMeta | None, str]:
         """Decide if a specialist is needed. Returns (specialist, reason) or (None, reason)."""
         # Trivial/simple tasks: no specialist needed
         if complexity in (TaskComplexity.TRIVIAL, TaskComplexity.SIMPLE):
@@ -344,7 +344,7 @@ class SpecialistRouter:
         return best, reason
 
     def _determine_verification_level(self, complexity: TaskComplexity,
-                                       specialist: Optional[SpecialistMeta]) -> str:
+                                       specialist: SpecialistMeta | None) -> str:
         """Determine verification level based on complexity and specialist."""
         if complexity == TaskComplexity.CRITICAL:
             return "full"
@@ -354,7 +354,7 @@ class SpecialistRouter:
             return specialist.verification_level
         return "standard"
 
-    def get_deterministic_plan(self, decision: RoutingDecision) -> List[Dict[str, Any]]:
+    def get_deterministic_plan(self, decision: RoutingDecision) -> list[dict[str, Any]]:
         """Generate a deterministic execution plan from routing decision."""
         plan = []
         for cap in decision.deterministic_capabilities:

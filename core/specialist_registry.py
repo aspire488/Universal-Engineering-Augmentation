@@ -59,28 +59,28 @@ class SpecialistMeta:
     """Universal specialist metadata — harness-independent."""
     name: str
     domain: SpecialistDomain
-    capabilities: List[SpecialistCapability]
+    capabilities: list[SpecialistCapability]
     description: str
     source: str  # where it came from (repo, author, etc.)
     license: str
     version: str = "1.0.0"
     deterministic_evidence_required: bool = True
     verification_level: str = "standard"  # minimal/standard/strict/security/full
-    excluded_from: List[str] = field(default_factory=list)  # task types to skip
-    tags: List[str] = field(default_factory=list)
-    file_hash: Optional[str] = None  # SHA-256 of source definition
+    excluded_from: list[str] = field(default_factory=list)  # task types to skip
+    tags: list[str] = field(default_factory=list)
+    file_hash: str | None = None  # SHA-256 of source definition
     harness_format: str = "universal"  # universal/claude/cursor/opencode/codex
-    skill_file: Optional[str] = None  # path to SKILL.md if exists
+    skill_file: str | None = None  # path to SKILL.md if exists
     enabled: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["domain"] = self.domain.value
         d["capabilities"] = [c.value for c in self.capabilities]
         return d
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "SpecialistMeta":
+    def from_dict(cls, d: dict[str, Any]) -> "SpecialistMeta":
         d["domain"] = SpecialistDomain(d["domain"])
         d["capabilities"] = [SpecialistCapability(c) for c in d["capabilities"]]
         return cls(**d)
@@ -112,9 +112,9 @@ class SpecialistRegistry:
         self._dir = Path(registry_dir) if registry_dir else REGISTRY_DIR
         self._dir.mkdir(parents=True, exist_ok=True)
         self._index_path = self._dir / "index.json"
-        self._index: Dict[str, Dict] = self._load_index()
+        self._index: dict[str, dict] = self._load_index()
 
-    def _load_index(self) -> Dict[str, Dict]:
+    def _load_index(self) -> dict[str, dict]:
         """Load the specialist index from disk."""
         if self._index_path.exists():
             with open(self._index_path) as f:
@@ -156,7 +156,7 @@ class SpecialistRegistry:
 
         return True
 
-    def get(self, name: str, domain: SpecialistDomain = None) -> Optional[SpecialistMeta]:
+    def get(self, name: str, domain: SpecialistDomain = None) -> SpecialistMeta | None:
         """Get a specialist by name. If domain is None, searches all domains."""
         if domain:
             key = f"{domain.value}:{name}"
@@ -169,7 +169,7 @@ class SpecialistRegistry:
                 return SpecialistMeta.from_dict(v)
         return None
 
-    def find_by_domain(self, domain: SpecialistDomain) -> List[SpecialistMeta]:
+    def find_by_domain(self, domain: SpecialistDomain) -> list[SpecialistMeta]:
         """Find all specialists in a domain."""
         prefix = f"{domain.value}:"
         return [
@@ -178,7 +178,7 @@ class SpecialistRegistry:
             if k.startswith(prefix)
         ]
 
-    def find_by_capability(self, cap: SpecialistCapability) -> List[SpecialistMeta]:
+    def find_by_capability(self, cap: SpecialistCapability) -> list[SpecialistMeta]:
         """Find all specialists with a given capability."""
         return [
             SpecialistMeta.from_dict(v)
@@ -186,7 +186,7 @@ class SpecialistRegistry:
             if cap.value in v.get("capabilities", [])
         ]
 
-    def find_by_tag(self, tag: str) -> List[SpecialistMeta]:
+    def find_by_tag(self, tag: str) -> list[SpecialistMeta]:
         """Find specialists matching a tag."""
         return [
             SpecialistMeta.from_dict(v)
@@ -194,7 +194,7 @@ class SpecialistRegistry:
             if tag in v.get("tags", [])
         ]
 
-    def list_all(self, enabled_only: bool = True) -> List[SpecialistMeta]:
+    def list_all(self, enabled_only: bool = True) -> list[SpecialistMeta]:
         """List all registered specialists."""
         results = []
         for v in self._index.values():
@@ -216,7 +216,7 @@ class SpecialistRegistry:
         """Remove duplicate specialists (same name, different domains).
         Returns count of removed duplicates.
         """
-        by_name: Dict[str, List[str]] = {}
+        by_name: dict[str, list[str]] = {}
         for key in self._index:
             name = key.split(":", 1)[1]
             by_name.setdefault(name, []).append(key)
@@ -234,7 +234,7 @@ class SpecialistRegistry:
             self._save_index()
         return removed
 
-    def stats(self) -> Dict[str, Any]:
+    def stats(self) -> dict[str, Any]:
         """Registry statistics."""
         domains = {}
         caps = {}

@@ -19,7 +19,7 @@ except ImportError:
 @dataclass
 class SolverResult:
     satisfiable: str  # "sat", "unsat", "unknown"
-    model: Dict = field(default_factory=dict)
+    model: dict = field(default_factory=dict)
     assertions_count: int = 0
     solver_time_ms: int = 0
 
@@ -32,7 +32,7 @@ class SolverResult:
         }
 
 
-def solve_sat(constraints: List[str], variables: Dict[str, str] = None) -> SolverResult:
+def solve_sat(constraints: list[str], variables: dict[str, str] = None) -> SolverResult:
     """Solve a SAT problem from constraint strings.
 
     Args:
@@ -90,10 +90,10 @@ def solve_sat(constraints: List[str], variables: Dict[str, str] = None) -> Solve
 
 
 def verify_preconditions(
-    pre: List[str],
-    post: List[str],
-    variables: Dict[str, str] = None,
-) -> Dict:
+    pre: list[str],
+    post: list[str],
+    variables: dict[str, str] = None,
+) -> dict:
     """Verify that preconditions imply postconditions.
 
     Checks: pre => post is valid (i.e., no case where pre is true but post is false).
@@ -149,10 +149,10 @@ def verify_preconditions(
 
 
 def find_satisfying_assignment(
-    variables: Dict[str, str],
-    constraints: List[str],
+    variables: dict[str, str],
+    constraints: list[str],
     optimize: str = None,
-) -> Dict:
+) -> dict:
     """Find a satisfying assignment, optionally optimizing a variable."""
     import time
     start = time.time()

@@ -38,14 +38,14 @@ class BotManager:
         return {"name": self.name, "running": self.running}
 
 
-def process_event(event: dict) -> Optional[dict]:
+def process_event(event: dict) -> dict | None:
     """Process an incoming event."""
     if not event or "type" not in event:
         return None
     return {"handled": True, "type": event["type"]}
 
 
-def validate_config(config: dict) -> List[str]:
+def validate_config(config: dict) -> list[str]:
     """Validate configuration, return list of errors."""
     errors = []
     if "name" not in config:
