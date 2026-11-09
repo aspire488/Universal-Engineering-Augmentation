@@ -26,7 +26,7 @@ def propose_candidates(problem: str, approaches: list[str], repo_path: str, base
     return candidates
 
 
-def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: str = "standard", profile: dict = None) -> dict:
+def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: str = "standard", profile: dict | None = None) -> dict:
     """Run verification on a candidate worktree."""
     with get_db() as conn:
         row = conn.execute("SELECT worktree_path FROM candidates WHERE id=?", (candidate_id,)).fetchone()

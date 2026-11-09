@@ -110,7 +110,7 @@ class DeterministicScorer:
         ScoreDimension.DOCUMENTATION: 1.0,
     }
 
-    def __init__(self, weights: dict[ScoreDimension, float] = None):
+    def __init__(self, weights: dict[ScoreDimension, float] | None = None):
         self._weights = weights or self.DEFAULT_WEIGHTS.copy()
         self._metrics: list[MetricEvidence] = []
 

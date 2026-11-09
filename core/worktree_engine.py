@@ -9,7 +9,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 WORKTREES_DIR = Path(os.environ.get("AUGMENTATION_WORKTREES", str(_ROOT / "worktrees")))
 
 
-def create_worktree(repo_path: str, branch_name: str = None, base_branch: str = "main") -> dict:
+def create_worktree(repo_path: str, branch_name: str | None = None, base_branch: str = "main") -> dict:
     """Create an isolated git worktree for a candidate."""
     if not branch_name:
         branch_name = f"candidate-{uuid.uuid4().hex[:8]}"
@@ -79,7 +79,7 @@ def commit_in_worktree(worktree_path: str, message: str) -> bool:
     return ok
 
 
-def _run(cmd: str, cwd: str = None) -> tuple:
+def _run(cmd: str, cwd: str | None = None) -> tuple:
     try:
         r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=120)
         return r.returncode == 0, r.stdout + r.stderr, r.returncode

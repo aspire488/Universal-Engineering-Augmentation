@@ -35,7 +35,7 @@ class SolverResult:
         }
 
 
-def solve_sat(constraints: list[str], variables: dict[str, str] = None) -> SolverResult:
+def solve_sat(constraints: list[str], variables: dict[str, str] | None = None) -> SolverResult:
     """Solve a SAT problem from constraint strings.
 
     Args:
@@ -95,7 +95,7 @@ def solve_sat(constraints: list[str], variables: dict[str, str] = None) -> Solve
 def verify_preconditions(
     pre: list[str],
     post: list[str],
-    variables: dict[str, str] = None,
+    variables: dict[str, str] | None = None,
 ) -> dict:
     """Verify that preconditions imply postconditions.
 
@@ -154,7 +154,7 @@ def verify_preconditions(
 def find_satisfying_assignment(
     variables: dict[str, str],
     constraints: list[str],
-    optimize: str = None,
+    optimize: str | None = None,
 ) -> dict:
     """Find a satisfying assignment, optionally optimizing a variable."""
     import time

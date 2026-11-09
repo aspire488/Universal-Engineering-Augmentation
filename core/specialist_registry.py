@@ -108,7 +108,7 @@ class SpecialistRegistry:
         candidates = registry.find_by_domain(SpecialistDomain.DEBUGGING)
     """
 
-    def __init__(self, registry_dir: str = None):
+    def __init__(self, registry_dir: str | None = None):
         self._dir = Path(registry_dir) if registry_dir else REGISTRY_DIR
         self._dir.mkdir(parents=True, exist_ok=True)
         self._index_path = self._dir / "index.json"

@@ -40,7 +40,7 @@ class VerificationResult:
         }
 
 
-def run_command(cmd: str, cwd: str = None, timeout: int = 120) -> tuple[bool, str, int]:
+def run_command(cmd: str, cwd: str | None = None, timeout: int = 120) -> tuple[bool, str, int]:
     try:
         result = subprocess.run(
             cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=timeout
@@ -52,7 +52,7 @@ def run_command(cmd: str, cwd: str = None, timeout: int = 120) -> tuple[bool, st
         return False, str(e), -1
 
 
-def verify_syntax(project_root: str, files: list[str] = None) -> VerificationResult:
+def verify_syntax(project_root: str, files: list[str] | None = None) -> VerificationResult:
     """Level 1: Syntax check."""
     result = VerificationResult("syntax")
     start = time.time()
@@ -91,7 +91,7 @@ def verify_typecheck(project_root: str) -> VerificationResult:
     return result
 
 
-def verify_tests(project_root: str, test_files: list[str] = None) -> VerificationResult:
+def verify_tests(project_root: str, test_files: list[str] | None = None) -> VerificationResult:
     """Level 3: Test execution."""
     result = VerificationResult("tests")
     start = time.time()
@@ -139,7 +139,7 @@ def verify_security(project_root: str) -> VerificationResult:
     return result
 
 
-def verify_structural(project_root: str, profile: dict = None) -> VerificationResult:
+def verify_structural(project_root: str, profile: dict | None = None) -> VerificationResult:
     """Level 6: Structural/architectural checks."""
     result = VerificationResult("structural")
     start = time.time()
@@ -164,7 +164,7 @@ VERIFICATION_LEVELS = {
 }
 
 
-def run_verification(project_root: str, level: str = "standard", files: list[str] = None, profile: dict = None) -> VerificationResult:
+def run_verification(project_root: str, level: str = "standard", files: list[str] | None = None, profile: dict | None = None) -> VerificationResult:
     """Run verification at the specified level."""
     checkers = VERIFICATION_LEVELS.get(level, VERIFICATION_LEVELS["standard"])
     

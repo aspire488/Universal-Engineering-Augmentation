@@ -145,7 +145,7 @@ def analyze_file_impact(file_path: Path, root: Path) -> dict:
     }
 
 
-def generate_impact_report(root: Path, target_file: str = None, target_symbol: str = None) -> dict:
+def generate_impact_report(root: Path, target_file: str | None = None, target_symbol: str | None = None) -> dict:
     """Generate a full impact report for a project root."""
     graph = build_import_graph(root)
     reverse_graph = build_reverse_import_graph(graph)

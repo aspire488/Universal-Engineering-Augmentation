@@ -42,7 +42,7 @@ class MutantGenerator:
         self.filepath = filepath
         self.lines = source.splitlines(keepends=True)
 
-    def generate_mutants(self, operators: list[str] = None) -> list[Mutation]:
+    def generate_mutants(self, operators: list[str] | None = None) -> list[Mutation]:
         operators = operators or MUTATION_OPERATORS
         mutants = []
         mid = 0
@@ -170,7 +170,7 @@ def run_tests(test_command: str, cwd: str, timeout: int = 60) -> tuple:
 def run_mutation_testing(
     filepath: str,
     test_command: str,
-    cwd: str = None,
+    cwd: str | None = None,
     max_mutants: int = 20,
     timeout: int = 60,
 ) -> dict:
@@ -241,7 +241,7 @@ def run_mutation_testing(
 def batch_mutation_test(
     filepaths: list[str],
     test_command: str,
-    cwd: str = None,
+    cwd: str | None = None,
     max_mutants: int = 10,
 ) -> dict:
     """Run mutation testing across multiple files."""

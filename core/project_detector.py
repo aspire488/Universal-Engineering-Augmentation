@@ -9,7 +9,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 PROFILES_DIR = Path(os.environ.get("AUGMENTATION_PROFILES", str(_ROOT / "profiles")))
 
 
-def detect_project(workdir: str = None) -> dict[str, Any]:
+def detect_project(workdir: str | None = None) -> dict[str, Any]:
     """Detect project type and load appropriate profile."""
     workdir = workdir or os.getcwd()
     root = _find_git_root(workdir) or workdir

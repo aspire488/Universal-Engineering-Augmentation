@@ -77,7 +77,7 @@ def compute_content_hash(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
-def get_git_info(workdir: str = None) -> dict[str, str]:
+def get_git_info(workdir: str | None = None) -> dict[str, str]:
     """Get current git SHA and branch."""
     workdir = workdir or os.getcwd()
     result = {"sha": "unknown", "branch": "unknown"}
@@ -136,12 +136,12 @@ class ProvenanceTracker:
         tracker.commit_record(record)
     """
 
-    def __init__(self, workdir: str = None):
+    def __init__(self, workdir: str | None = None):
         self._workdir = workdir or os.getcwd()
         self._records: list[ProvenanceRecord] = []
 
     def start_record(self, file_path: str, tool: str = "unknown",
-                     specialist: str = None, specialist_hash: str = None) -> ProvenanceRecord:
+                     specialist: str | None = None, specialist_hash: str | None = None) -> ProvenanceRecord:
         """Start a new provenance record. Call commit_record() when done."""
         git_info = get_git_info(self._workdir)
         abs_path = os.path.abspath(file_path)

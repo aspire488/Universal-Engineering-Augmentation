@@ -72,8 +72,8 @@ class ScaleDecider:
         print(decision.verification_tier)  # "security"
     """
 
-    def decide(self, files_changed: list[str] = None, lines_changed: int = 0,
-               task_description: str = "", risk_signals: list[str] = None) -> ScaleDecision:
+    def decide(self, files_changed: list[str] | None = None, lines_changed: int = 0,
+               task_description: str = "", risk_signals: list[str] | None = None) -> ScaleDecision:
         """Make a scale decision based on available information."""
         files_changed = files_changed or []
         risk_signals = risk_signals or []

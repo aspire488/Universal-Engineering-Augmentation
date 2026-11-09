@@ -19,7 +19,7 @@ def cmd_help(args: list) -> str:
 class BotManager:
     """Manages bot lifecycle."""
     
-    def __init__(self, name: str, root: Path = None):
+    def __init__(self, name: str, root: Path | None = None):
         self.name = name
         self.root = root or Path.cwd()
         self.running = False

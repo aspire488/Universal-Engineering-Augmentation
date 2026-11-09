@@ -29,7 +29,7 @@ class QueryResult:
         }
 
 
-def query(sql: str, db_path: str = None) -> QueryResult:
+def query(sql: str, db_path: str | None = None) -> QueryResult:
     """Execute a SQL query against the augmentation SQLite DB via DuckDB."""
     if not AVAILABLE:
         return QueryResult(columns=[], rows=[], row_count=0)
@@ -56,7 +56,7 @@ def query(sql: str, db_path: str = None) -> QueryResult:
             return QueryResult(columns=[], rows=[{"error": str(e2)}], row_count=0)
 
 
-def get_event_summary(project: str = None) -> dict:
+def get_event_summary(project: str | None = None) -> dict:
     """Get event summary statistics."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -86,7 +86,7 @@ def get_event_summary(project: str = None) -> dict:
         return {"error": str(e)}
 
 
-def get_task_metrics(project: str = None) -> dict:
+def get_task_metrics(project: str | None = None) -> dict:
     """Get task completion metrics."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
