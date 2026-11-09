@@ -152,9 +152,6 @@ def find_symbol(filepath: str, name: str) -> dict | None:
     if not parser:
         return None
 
-    source = Path(filepath).read_bytes()
-    tree = parser.parse(source)
-
     for func in extract_functions(filepath):
         if func["name"] == name:
             func["kind"] = "function"
@@ -201,7 +198,7 @@ def get_import_graph(filepath: str) -> dict:
     modules = []
     for imp in imports:
         text = imp["text"]
-        if text.startswith("from ") or text.startswith("import "):
+        if text.startswith(("from ", "import ")):
             parts = text.split()
             if len(parts) >= 2:
                 modules.append(parts[1].split(".")[0])

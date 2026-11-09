@@ -43,7 +43,7 @@ def query(sql: str, db_path: str | None = None) -> QueryResult:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return QueryResult(columns=columns, rows=rows, row_count=len(rows))
-    except Exception as e:
+    except Exception:
         # Fallback: try direct path
         try:
             conn = duckdb.connect()

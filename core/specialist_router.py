@@ -329,9 +329,12 @@ class SpecialistRouter:
         for domain in domains:
             candidates = self._registry.find_by_domain(domain)
             for spec in candidates:
-                if spec.enabled and task_type.value not in spec.excluded_from:
-                    if best is None or len(spec.capabilities) > len(best.capabilities):
-                        best = spec
+                if (
+                    spec.enabled
+                    and task_type.value not in spec.excluded_from
+                    and (best is None or len(spec.capabilities) > len(best.capabilities))
+                ):
+                    best = spec
 
         if best is None:
             return None, "No enabled specialist found for matched domain"

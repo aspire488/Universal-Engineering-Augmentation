@@ -17,7 +17,7 @@ def create_worktree(repo_path: str, branch_name: str | None = None, base_branch:
     worktree_path = WORKTREES_DIR / branch_name
     worktree_path.mkdir(parents=True, exist_ok=True)
     
-    ok, out, code = _run(f'git worktree add "{worktree_path}" -b {branch_name} {base_branch}', cwd=repo_path)
+    ok, out, _ = _run(f'git worktree add "{worktree_path}" -b {branch_name} {base_branch}', cwd=repo_path)
     
     if ok:
         return {"success": True, "path": str(worktree_path), "branch": branch_name}
@@ -81,7 +81,7 @@ def commit_in_worktree(worktree_path: str, message: str) -> bool:
 
 def _run(cmd: str, cwd: str | None = None) -> tuple:
     try:
-        r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=120)
+        r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=120, check=False)
         return r.returncode == 0, r.stdout + r.stderr, r.returncode
     except Exception as e:
         return False, str(e), -1

@@ -85,7 +85,7 @@ def get_git_info(workdir: str | None = None) -> dict[str, str]:
     try:
         sha = subprocess.run(
             ["git", "rev-parse", "HEAD"],
-            cwd=workdir, capture_output=True, text=True, timeout=5
+            cwd=workdir, capture_output=True, text=True, timeout=5, check=False
         )
         if sha.returncode == 0:
             result["sha"] = sha.stdout.strip()[:12]
@@ -95,7 +95,7 @@ def get_git_info(workdir: str | None = None) -> dict[str, str]:
     try:
         branch = subprocess.run(
             ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            cwd=workdir, capture_output=True, text=True, timeout=5
+            cwd=workdir, capture_output=True, text=True, timeout=5, check=False
         )
         if branch.returncode == 0:
             result["branch"] = branch.stdout.strip()

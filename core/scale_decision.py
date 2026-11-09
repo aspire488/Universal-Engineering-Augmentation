@@ -133,12 +133,10 @@ class ScaleDecider:
         # File-based risks
         for f in files:
             fl = f.lower()
-            if any(p in fl for p in ["auth", "security", "crypto", "token"]):
-                if "security-sensitive" not in risks:
-                    risks.append("security-sensitive")
-            if any(p in fl for p in ["migrat", "schema", "model"]):
-                if "data-layer" not in risks:
-                    risks.append("data-layer")
+            if any(p in fl for p in ["auth", "security", "crypto", "token"]) and "security-sensitive" not in risks:
+                risks.append("security-sensitive")
+            if any(p in fl for p in ["migrat", "schema", "model"]) and "data-layer" not in risks:
+                risks.append("data-layer")
             if any(p in fl for p in ["config", "settings", "env"]):
                 risks.append("configuration-change")
 
@@ -161,10 +159,7 @@ class ScaleDecider:
             parts = Path(f).parts
             if len(parts) > 2:
                 dirs.add(parts[0])
-        if len(dirs) > 2:
-            return True
-
-        return False
+        return len(dirs) > 2
 
     def _classify_scale(self, file_count: int, line_count: int,
                          arch_impact: bool, risk_factors: list[str]) -> ScaleLevel:

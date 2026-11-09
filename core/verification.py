@@ -43,7 +43,7 @@ class VerificationResult:
 def run_command(cmd: str, cwd: str | None = None, timeout: int = 120) -> tuple[bool, str, int]:
     try:
         result = subprocess.run(
-            cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=timeout
+            cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=timeout, check=False
         )
         return result.returncode == 0, result.stdout + result.stderr, result.returncode
     except subprocess.TimeoutExpired:

@@ -189,7 +189,7 @@ def find_satisfying_assignment(
             try:
                 expr = eval(c, {"__builtins__": {}}, ctx)
                 opt.add(expr)
-            except:
+            except Exception:
                 pass
         if var_name in ctx:
             opt.minimize(ctx[var_name])

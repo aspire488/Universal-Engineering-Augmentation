@@ -18,7 +18,7 @@ import json
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 _ROOT = Path(__file__).resolve().parent.parent
 
@@ -99,7 +99,7 @@ class DeterministicScorer:
     """
 
     # Default dimension weights
-    DEFAULT_WEIGHTS: dict[ScoreDimension, float] = {
+    DEFAULT_WEIGHTS: ClassVar[dict[ScoreDimension, float]] = {
         ScoreDimension.CORRECTNESS: 3.0,
         ScoreDimension.MAINTAINABILITY: 2.0,
         ScoreDimension.SECURITY: 2.5,
@@ -174,7 +174,7 @@ class DeterministicScorer:
         # Calculate confidence based on evidence density
         # More evidence = higher confidence, but diminishing returns
         evidence_count = len(self._metrics)
-        unique_tools = len(set(m.source for m in self._metrics))
+        unique_tools = len({m.source for m in self._metrics})
         confidence = min(1.0, (evidence_count * 0.1 + unique_tools * 0.15))
 
         # Identify warnings
@@ -278,7 +278,6 @@ class DeterministicScorer:
 
         # Cyclomatic complexity
         avg_complexity = complexity_data.get("avg_cyclomatic", 1.0)
-        max_complexity = complexity_data.get("max_cyclomatic", 1.0)
         # Normalize: 1-10 is good, 10-20 is ok, 20+ is bad
         complexity_score = max(0, min(1.0, 1.0 - (avg_complexity - 1) / 19))
 

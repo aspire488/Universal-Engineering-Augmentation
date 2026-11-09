@@ -156,7 +156,7 @@ def run_tests(test_command: str, cwd: str, timeout: int = 60) -> tuple:
     try:
         result = subprocess.run(
             test_command, shell=True, cwd=cwd,
-            capture_output=True, text=True, timeout=timeout,
+            capture_output=True, text=True, timeout=timeout, check=False,
         )
         output = result.stdout + result.stderr
         passed = result.returncode == 0
@@ -201,7 +201,7 @@ def run_mutation_testing(
 
         # Run tests on mutated file
         mut_test_cmd = test_command.replace(str(Path(filepath).name), str(mut_file.name))
-        test_pass, test_out = run_tests(mut_test_cmd, cwd, timeout)
+        test_pass, _ = run_tests(mut_test_cmd, cwd, timeout)
 
         elapsed = int((time.time() - mut_start) * 1000)
 
