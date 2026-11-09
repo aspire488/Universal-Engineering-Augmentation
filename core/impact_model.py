@@ -5,6 +5,7 @@ import os
 import re
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 
 def find_imports(file_path: Path) -> set[str]:
@@ -102,7 +103,7 @@ def build_reverse_import_graph(graph: dict[str, set[str]]) -> dict[str, set[str]
     return dict(reverse)
 
 
-def analyze_symbol_impact(symbol_name: str, reverse_graph: dict[str, set[str]]) -> dict:
+def analyze_symbol_impact(symbol_name: str, reverse_graph: dict[str, set[str]]) -> dict[str, Any]:
     """Analyze impact of changing a symbol."""
     direct_callers = reverse_graph.get(symbol_name, set())
     transitive = set()
@@ -123,7 +124,7 @@ def analyze_symbol_impact(symbol_name: str, reverse_graph: dict[str, set[str]]) 
     }
 
 
-def analyze_file_impact(file_path: Path, root: Path) -> dict:
+def analyze_file_impact(file_path: Path, root: Path) -> dict[str, Any]:
     """Analyze impact of changing a file."""
     rel = file_path.relative_to(root) if file_path.is_relative_to(root) else file_path
     module_key = str(rel).replace("\\", "/").replace("/", ".").replace(".py", "")
@@ -145,7 +146,7 @@ def analyze_file_impact(file_path: Path, root: Path) -> dict:
     }
 
 
-def generate_impact_report(root: Path, target_file: str | None = None, target_symbol: str | None = None) -> dict:
+def generate_impact_report(root: Path, target_file: str | None = None, target_symbol: str | None = None) -> dict[str, Any]:
     """Generate a full impact report for a project root."""
     graph = build_import_graph(root)
     reverse_graph = build_reverse_import_graph(graph)

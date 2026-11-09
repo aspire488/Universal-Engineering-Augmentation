@@ -2,6 +2,7 @@
 
 import json
 from dataclasses import dataclass, field
+from typing import Any
 
 try:
     from z3 import (
@@ -22,7 +23,7 @@ except ImportError:
 @dataclass
 class SolverResult:
     satisfiable: str  # "sat", "unsat", "unknown"
-    model: dict = field(default_factory=dict)
+    model: dict[str, Any] = field(default_factory=dict)
     assertions_count: int = 0
     solver_time_ms: int = 0
 
@@ -96,7 +97,7 @@ def verify_preconditions(
     pre: list[str],
     post: list[str],
     variables: dict[str, str] | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Verify that preconditions imply postconditions.
 
     Checks: pre => post is valid (i.e., no case where pre is true but post is false).
@@ -155,7 +156,7 @@ def find_satisfying_assignment(
     variables: dict[str, str],
     constraints: list[str],
     optimize: str | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Find a satisfying assignment, optionally optimizing a variable."""
     import time
     start = time.time()

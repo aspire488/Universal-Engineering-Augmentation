@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from typing import Any
 
 try:
     import tree_sitter_javascript as tsjs
@@ -33,7 +34,7 @@ def _parser_for(filepath: str) -> Parser | None:
     return Parser(lang)
 
 
-def _node_info(node, source_bytes: bytes) -> dict:
+def _node_info(node, source_bytes: bytes) -> dict[str, Any]:
     return {
         "type": node.type,
         "start_line": node.start_point[0] + 1,
@@ -44,7 +45,7 @@ def _node_info(node, source_bytes: bytes) -> dict:
     }
 
 
-def parse_file(filepath: str) -> dict:
+def parse_file(filepath: str) -> dict[str, Any]:
     """Parse a file and return its structural AST summary."""
     parser = _parser_for(filepath)
     if not parser:
@@ -72,7 +73,7 @@ def _count_nodes(node) -> int:
     return count
 
 
-def extract_functions(filepath: str) -> list[dict]:
+def extract_functions(filepath: str) -> list[dict[str, Any]]:
     """Extract all function definitions with name, args, and line range."""
     parser = _parser_for(filepath)
     if not parser:
@@ -98,7 +99,7 @@ def extract_functions(filepath: str) -> list[dict]:
     return result
 
 
-def extract_classes(filepath: str) -> list[dict]:
+def extract_classes(filepath: str) -> list[dict[str, Any]]:
     """Extract all class definitions with name, bases, and line range."""
     parser = _parser_for(filepath)
     if not parser:
@@ -123,7 +124,7 @@ def extract_classes(filepath: str) -> list[dict]:
     return result
 
 
-def extract_imports(filepath: str) -> list[dict]:
+def extract_imports(filepath: str) -> list[dict[str, Any]]:
     """Extract all import statements."""
     parser = _parser_for(filepath)
     if not parser:
@@ -192,7 +193,7 @@ def extract_function_body(filepath: str, name: str) -> str | None:
     return None
 
 
-def get_import_graph(filepath: str) -> dict:
+def get_import_graph(filepath: str) -> dict[str, Any]:
     """Extract import relationships from a file for graph analysis."""
     imports = extract_imports(filepath)
     modules = []
@@ -209,7 +210,7 @@ def get_import_graph(filepath: str) -> dict:
     }
 
 
-def batch_parse(filepaths: list[str]) -> dict:
+def batch_parse(filepaths: list[str]) -> dict[str, Any]:
     """Parse multiple files and return aggregate stats."""
     total_functions = 0
     total_classes = 0

@@ -4,9 +4,10 @@ import json
 import re
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 
-def find_references(symbol: str, root: Path) -> list[dict]:
+def find_references(symbol: str, root: Path) -> list[dict[str, Any]]:
     """Find all references to a symbol across the codebase."""
     references = []
     
@@ -69,7 +70,7 @@ def find_function_definitions(root: Path) -> dict[str, str]:
     return functions
 
 
-def analyze_event_emitters(root: Path) -> dict[str, list[dict]]:
+def analyze_event_emitters(root: Path) -> dict[str, list[dict[str, Any]]]:
     """Analyze all emit_runtime_trace() calls and their event types."""
     emitters = defaultdict(list)
     
@@ -120,7 +121,7 @@ def analyze_test_coverage(root: Path) -> dict[str, list[str]]:
     return dict(coverage)
 
 
-def generate_comprehensive_report(root: Path) -> dict:
+def generate_comprehensive_report(root: Path) -> dict[str, Any]:
     """Generate a comprehensive impact and regression report for a project."""
     classes = find_class_definitions(root)
     functions = find_function_definitions(root)

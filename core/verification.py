@@ -5,6 +5,7 @@ import os
 import subprocess
 import time
 from pathlib import Path
+from typing import Any
 
 _ROOT = Path(__file__).resolve().parent.parent
 WORKDIR = Path(os.environ.get("AUGMENTATION_WORKDIR", str(_ROOT)))
@@ -13,7 +14,7 @@ WORKDIR = Path(os.environ.get("AUGMENTATION_WORKDIR", str(_ROOT)))
 class VerificationResult:
     def __init__(self, level: str):
         self.level = level
-        self.checks: list[dict] = []
+        self.checks: list[dict[str, Any]] = []
         self.passed = 0
         self.failed = 0
         self.skipped = 0
@@ -139,7 +140,7 @@ def verify_security(project_root: str) -> VerificationResult:
     return result
 
 
-def verify_structural(project_root: str, profile: dict | None = None) -> VerificationResult:
+def verify_structural(project_root: str, profile: dict[str, Any] | None = None) -> VerificationResult:
     """Level 6: Structural/architectural checks."""
     result = VerificationResult("structural")
     start = time.time()
@@ -164,7 +165,7 @@ VERIFICATION_LEVELS = {
 }
 
 
-def run_verification(project_root: str, level: str = "standard", files: list[str] | None = None, profile: dict | None = None) -> VerificationResult:
+def run_verification(project_root: str, level: str = "standard", files: list[str] | None = None, profile: dict[str, Any] | None = None) -> VerificationResult:
     """Run verification at the specified level."""
     checkers = VERIFICATION_LEVELS.get(level, VERIFICATION_LEVELS["standard"])
     

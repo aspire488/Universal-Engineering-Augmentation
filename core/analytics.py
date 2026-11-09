@@ -4,6 +4,7 @@ import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 try:
     import duckdb
@@ -18,7 +19,7 @@ DB_PATH = Path(os.environ.get("AUGMENTATION_DB", str(_ROOT / "data" / "sqlite" /
 @dataclass
 class QueryResult:
     columns: list[str]
-    rows: list[dict]
+    rows: list[dict[str, Any]]
     row_count: int
 
     def to_dict(self):
@@ -56,7 +57,7 @@ def query(sql: str, db_path: str | None = None) -> QueryResult:
             return QueryResult(columns=[], rows=[{"error": str(e2)}], row_count=0)
 
 
-def get_event_summary(project: str | None = None) -> dict:
+def get_event_summary(project: str | None = None) -> dict[str, Any]:
     """Get event summary statistics."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -86,7 +87,7 @@ def get_event_summary(project: str | None = None) -> dict:
         return {"error": str(e)}
 
 
-def get_task_metrics(project: str | None = None) -> dict:
+def get_task_metrics(project: str | None = None) -> dict[str, Any]:
     """Get task completion metrics."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -115,7 +116,7 @@ def get_task_metrics(project: str | None = None) -> dict:
         return {"error": str(e)}
 
 
-def get_verification_trends() -> dict:
+def get_verification_trends() -> dict[str, Any]:
     """Get verification run trends over time."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -143,7 +144,7 @@ def get_verification_trends() -> dict:
         return {"error": str(e)}
 
 
-def execute_custom(sql: str) -> dict:
+def execute_custom(sql: str) -> dict[str, Any]:
     """Execute arbitrary SQL against the augmentation DB."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}

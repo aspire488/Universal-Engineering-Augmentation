@@ -4,12 +4,13 @@ import os
 import subprocess
 import uuid
 from pathlib import Path
+from typing import Any
 
 _ROOT = Path(__file__).resolve().parent.parent
 WORKTREES_DIR = Path(os.environ.get("AUGMENTATION_WORKTREES", str(_ROOT / "worktrees")))
 
 
-def create_worktree(repo_path: str, branch_name: str | None = None, base_branch: str = "main") -> dict:
+def create_worktree(repo_path: str, branch_name: str | None = None, base_branch: str = "main") -> dict[str, Any]:
     """Create an isolated git worktree for a candidate."""
     if not branch_name:
         branch_name = f"candidate-{uuid.uuid4().hex[:8]}"
@@ -32,7 +33,7 @@ def remove_worktree(repo_path: str, branch_name: str):
     _run(f'git branch -D {branch_name}', cwd=repo_path)
 
 
-def list_worktrees(repo_path: str) -> list[dict]:
+def list_worktrees(repo_path: str) -> list[dict[str, Any]]:
     """List all active worktrees."""
     ok, out, _ = _run("git worktree list --porcelain", cwd=repo_path)
     if not ok:
@@ -61,7 +62,7 @@ def copy_file_to_worktree(worktree_path: str, file_path: str, content: str):
     full_path.write_text(content, encoding="utf-8")
 
 
-def run_in_worktree(worktree_path: str, cmd: str) -> tuple:
+def run_in_worktree(worktree_path: str, cmd: str) -> tuple[bool, str, int]:
     """Run a command inside a worktree."""
     return _run(cmd, cwd=worktree_path)
 
@@ -79,7 +80,7 @@ def commit_in_worktree(worktree_path: str, message: str) -> bool:
     return ok
 
 
-def _run(cmd: str, cwd: str | None = None) -> tuple:
+def _run(cmd: str, cwd: str | None = None) -> tuple[bool, str, int]:
     try:
         r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=120, check=False)
         return r.returncode == 0, r.stdout + r.stderr, r.returncode

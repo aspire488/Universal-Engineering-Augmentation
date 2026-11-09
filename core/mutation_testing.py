@@ -6,6 +6,7 @@ import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 MUTATION_OPERATORS = [
     "remove_not",
@@ -173,7 +174,7 @@ def run_mutation_testing(
     cwd: str | None = None,
     max_mutants: int = 20,
     timeout: int = 60,
-) -> dict:
+) -> dict[str, Any]:
     """Run mutation testing on a file."""
     source = Path(filepath).read_text(encoding="utf-8")
     generator = MutantGenerator(source, filepath)
@@ -243,7 +244,7 @@ def batch_mutation_test(
     test_command: str,
     cwd: str | None = None,
     max_mutants: int = 10,
-) -> dict:
+) -> dict[str, Any]:
     """Run mutation testing across multiple files."""
     all_results = []
     total_killed = 0
