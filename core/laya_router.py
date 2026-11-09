@@ -111,7 +111,7 @@ def laya_classify(
         )
         answer = result["answers"]["task"]
         label = str(answer["choice"])
-    except Exception:
+    except Exception:  # noqa: BLE001  # optional classifier must never break routing; caller falls back
         return None
 
     return label if label in allowed else None

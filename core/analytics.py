@@ -43,7 +43,7 @@ def query(sql: str, db_path: str | None = None) -> QueryResult:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return QueryResult(columns=columns, rows=rows, row_count=len(rows))
-    except Exception:
+    except Exception:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         # Fallback: try direct path
         try:
             conn = duckdb.connect()
@@ -52,7 +52,7 @@ def query(sql: str, db_path: str | None = None) -> QueryResult:
             rows = [dict(zip(columns, row)) for row in result.fetchall()]
             conn.close()
             return QueryResult(columns=columns, rows=rows, row_count=len(rows))
-        except Exception as e2:
+        except Exception as e2:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
             return QueryResult(columns=[], rows=[{"error": str(e2)}], row_count=0)
 
 
@@ -82,7 +82,7 @@ def get_event_summary(project: str | None = None) -> dict:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return {"summary": rows}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         return {"error": str(e)}
 
 
@@ -111,7 +111,7 @@ def get_task_metrics(project: str | None = None) -> dict:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return {"metrics": rows}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         return {"error": str(e)}
 
 
@@ -139,7 +139,7 @@ def get_verification_trends() -> dict:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return {"trends": rows}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         return {"error": str(e)}
 
 
@@ -156,7 +156,7 @@ def execute_custom(sql: str) -> dict:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return {"columns": columns, "rows": rows, "count": len(rows)}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         return {"error": str(e)}
 
 

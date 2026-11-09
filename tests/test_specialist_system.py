@@ -373,7 +373,7 @@ def main():
         try:
             test_fn()
             passed += 1
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # ad-hoc runner: any test failure is reported, not raised
             failed += 1
             errors.append(f"{name}: {e}")
             print(f"  [FAIL] {name}: {e}")

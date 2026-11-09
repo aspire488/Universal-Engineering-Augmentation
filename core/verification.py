@@ -48,7 +48,7 @@ def run_command(cmd: str, cwd: str | None = None, timeout: int = 120) -> tuple[b
         return result.returncode == 0, result.stdout + result.stderr, result.returncode
     except subprocess.TimeoutExpired:
         return False, "Command timed out", -1
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: spawn failure is reported as (False, msg, -1)
         return False, str(e), -1
 
 

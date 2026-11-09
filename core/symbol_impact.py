@@ -29,7 +29,7 @@ def find_references(symbol: str, root: Path) -> list[dict]:
                         "line": i,
                         "content": stripped[:100],
                     })
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return references
@@ -46,7 +46,7 @@ def find_class_definitions(root: Path) -> dict[str, str]:
             content = py_file.read_text(encoding="utf-8", errors="ignore")
             for m in re.finditer(r'^class\s+(\w+)', content, re.MULTILINE):
                 classes[m.group(1)] = str(py_file.relative_to(root))
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return classes
@@ -63,7 +63,7 @@ def find_function_definitions(root: Path) -> dict[str, str]:
             content = py_file.read_text(encoding="utf-8", errors="ignore")
             for m in re.finditer(r'^def\s+(\w+)', content, re.MULTILINE):
                 functions[m.group(1)] = str(py_file.relative_to(root))
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return functions
@@ -87,7 +87,7 @@ def analyze_event_emitters(root: Path) -> dict[str, list[dict]]:
                             "file": str(py_file.relative_to(root)),
                             "line": i,
                         })
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return dict(emitters)
@@ -114,7 +114,7 @@ def analyze_test_coverage(root: Path) -> dict[str, list[str]]:
             for module_name in ["pipeline", "runtime", "config", "context_manager", "command_router"]:
                 if module_name in content:
                     coverage[module_name].append(str(test_file.relative_to(root)))
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return dict(coverage)
@@ -136,7 +136,7 @@ def generate_comprehensive_report(root: Path) -> dict:
             rel = py_file.relative_to(root)
             module = str(rel).replace("\\", "/").replace("/", ".").replace(".py", "")
             all_modules.add(module)
-        except Exception:
+        except ValueError:
             pass
     
     tested_modules = set(test_coverage.keys())

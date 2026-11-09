@@ -83,7 +83,7 @@ def _run(cmd: str, cwd: str | None = None) -> tuple:
     try:
         r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=120, check=False)
         return r.returncode == 0, r.stdout + r.stderr, r.returncode
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: spawn failure is reported as (False, msg, -1)
         return False, str(e), -1
 
 

@@ -58,3 +58,8 @@ include = ["core*", "adapters*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+[tool.ruff.lint.per-file-ignores]
+# verify_all.py is a smoke-check harness: each section deliberately catches any
+# Exception and records it as a [FAIL] line so the remaining checks still run.
+"scripts/verify_all.py" = ["BLE001"]

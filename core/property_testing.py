@@ -71,7 +71,7 @@ def run_property_test(
             duration_ms=elapsed,
             error=str(e)[:500],
         )
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # user-supplied property/module may raise anything; reported in result
         elapsed = int((time.time() - start) * 1000)
         return PropertyResult(
             test_name=test_func.__name__,
@@ -87,7 +87,7 @@ def run_property_file(filepath: str, max_examples: int = 50) -> dict:
     module = importlib.util.module_from_spec(spec)
     try:
         spec.loader.exec_module(module)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # user-supplied property/module may raise anything; reported in result
         return {"error": f"Failed to load {filepath}: {e}"}
 
     results = []

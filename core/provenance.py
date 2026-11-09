@@ -89,7 +89,7 @@ def get_git_info(workdir: str | None = None) -> dict[str, str]:
         )
         if sha.returncode == 0:
             result["sha"] = sha.stdout.strip()[:12]
-    except Exception:
+    except Exception:  # noqa: BLE001, S110  # best-effort git metadata; fields stay "unknown"
         pass
 
     try:
@@ -99,7 +99,7 @@ def get_git_info(workdir: str | None = None) -> dict[str, str]:
         )
         if branch.returncode == 0:
             result["branch"] = branch.stdout.strip()
-    except Exception:
+    except Exception:  # noqa: BLE001, S110  # best-effort git metadata; fields stay "unknown"
         pass
 
     return result

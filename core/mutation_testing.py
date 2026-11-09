@@ -163,7 +163,7 @@ def run_tests(test_command: str, cwd: str, timeout: int = 60) -> tuple:
         return passed, output
     except subprocess.TimeoutExpired:
         return False, "TIMEOUT"
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: runner failure is reported as a failed test run
         return False, str(e)
 
 

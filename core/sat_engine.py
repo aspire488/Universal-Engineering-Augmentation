@@ -69,7 +69,7 @@ def solve_sat(constraints: list[str], variables: dict[str, str] | None = None) -
         try:
             expr = eval(c, {"__builtins__": {}}, ctx)
             s.add(expr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # eval of user constraint may raise anything; reported or skipped
             return SolverResult(
                 satisfiable="unknown",
                 model={"error": f"Constraint parse error: {c} -> {e}"},
@@ -123,7 +123,7 @@ def verify_preconditions(
             expr = eval(c, {"__builtins__": {}}, ctx)
             pre_exprs.append(expr)
             s.add(expr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # eval of user constraint may raise anything; reported or skipped
             return {"error": f"Precondition parse error: {c} -> {e}"}
 
     # Negate postconditions (find counterexample)
@@ -131,7 +131,7 @@ def verify_preconditions(
         try:
             expr = eval(c, {"__builtins__": {}}, ctx)
             s.add(Not(expr))
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # eval of user constraint may raise anything; reported or skipped
             return {"error": f"Postcondition parse error: {c} -> {e}"}
 
     result = s.check()
@@ -178,7 +178,7 @@ def find_satisfying_assignment(
         try:
             expr = eval(c, {"__builtins__": {}}, ctx)
             s.add(expr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # eval of user constraint may raise anything; reported or skipped
             return {"error": f"Constraint parse error: {c} -> {e}"}
 
     if optimize and optimize.startswith("min:"):
@@ -189,7 +189,7 @@ def find_satisfying_assignment(
             try:
                 expr = eval(c, {"__builtins__": {}}, ctx)
                 opt.add(expr)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110  # eval of user constraint may raise anything; reported or skipped
                 pass
         if var_name in ctx:
             opt.minimize(ctx[var_name])

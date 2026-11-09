@@ -22,7 +22,7 @@ def find_imports(file_path: Path) -> set[str]:
             m = re.match(r"import\s+([\w.]+)", line)
             if m:
                 imports.add(m.group(1))
-    except Exception:
+    except OSError:
         pass
     return imports
 
@@ -34,7 +34,7 @@ def find_function_calls(file_path: Path) -> set[str]:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
         for m in re.finditer(r"(\w+)\s*\(", content):
             calls.add(m.group(1))
-    except Exception:
+    except OSError:
         pass
     return calls
 
@@ -50,7 +50,7 @@ def find_emitters(file_path: Path) -> list[str]:
                 m = re.search(r'emit_runtime_trace\(\s*["\'](\w+)', line)
                 if m:
                     emitters.append(f"{file_path.name}:{i}:{m.group(1)}")
-    except Exception:
+    except OSError:
         pass
     return emitters
 
@@ -70,7 +70,7 @@ def find_test_files(module_path: Path, root: Path) -> list[Path]:
             content = test_file.read_text(encoding="utf-8", errors="ignore")
             if module_name in content or str(module_rel).replace("\\", "/") in content:
                 tests.append(test_file)
-        except Exception:
+        except OSError:
             pass
     return tests
 
@@ -88,7 +88,7 @@ def build_import_graph(root: Path) -> dict[str, set[str]]:
             imports = find_imports(py_file)
             for imp in imports:
                 graph[module_key].add(imp)
-        except Exception:
+        except ValueError:
             pass
     return dict(graph)
 
