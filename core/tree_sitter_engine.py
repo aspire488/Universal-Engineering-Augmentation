@@ -1,7 +1,6 @@
 """Tree-sitter structural code intelligence engine."""
 
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 import json
 
 try:

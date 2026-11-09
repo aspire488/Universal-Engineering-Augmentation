@@ -15,9 +15,8 @@ is harness-specific and lives in adapters/.
 """
 
 import json
-import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Any
 from dataclasses import dataclass, field, asdict
 from enum import Enum
 

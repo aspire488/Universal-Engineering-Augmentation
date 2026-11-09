@@ -1,9 +1,7 @@
 """Sample Python file for verifying augmentation tools work."""
 
-import os
 import json
 from pathlib import Path
-from typing import List, Dict, Optional
 
 
 def run_bot(config: dict, verbose: bool = False) -> dict:

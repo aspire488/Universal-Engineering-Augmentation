@@ -3,8 +3,8 @@
 Run: pytest tests/ -v
 """
 
+import importlib
 import sys
-import os
 import tempfile
 import shutil
 from pathlib import Path
@@ -246,8 +246,7 @@ class TestSymbolImpact:
     """Tests for core.symbol_impact module."""
 
     def test_import(self):
-        import core.symbol_impact
-        assert True
+        importlib.import_module("core.symbol_impact")
 
 
 class TestScoring:
@@ -357,16 +356,14 @@ class TestAnalytics:
     """Tests for core.analytics module."""
 
     def test_import(self):
-        import core.analytics
-        assert True
+        importlib.import_module("core.analytics")
 
 
 class TestMutationTesting:
     """Tests for core.mutation_testing module."""
 
     def test_import(self):
-        import core.mutation_testing
-        assert True
+        importlib.import_module("core.mutation_testing")
 
 
 class TestVersion:

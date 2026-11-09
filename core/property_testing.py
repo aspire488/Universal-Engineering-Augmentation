@@ -2,13 +2,12 @@
 
 import json
 import importlib.util
-import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Callable
+from collections.abc import Callable
 from dataclasses import dataclass
 
 try:
-    from hypothesis import given, strategies as st, settings, HealthCheck
+    import hypothesis  # noqa: F401  # availability probe only; the generated test source imports what it needs
     AVAILABLE = True
 except ImportError:
     AVAILABLE = False

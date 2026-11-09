@@ -1,10 +1,8 @@
 """Symbol Impact Model - Track impact at class/function level."""
 
-import os
 import re
 import json
 from pathlib import Path
-from typing import Dict, List, Set, Optional
 from collections import defaultdict
 
 

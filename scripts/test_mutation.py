@@ -1,7 +1,7 @@
-import sys, json
+import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from core.mutation_testing import MutantGenerator, apply_mutation, run_mutation_testing
+from core.mutation_testing import MutantGenerator, apply_mutation
 
 # Test 1: Generate mutants
 source = Path(__file__).resolve().parent / "test_target.py"

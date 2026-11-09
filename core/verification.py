@@ -5,7 +5,6 @@ import json
 import time
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 _ROOT = Path(__file__).resolve().parent.parent
 WORKDIR = Path(os.environ.get("AUGMENTATION_WORKDIR", str(_ROOT)))

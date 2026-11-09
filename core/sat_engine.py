@@ -1,15 +1,13 @@
 """Z3 SAT/SMT solver engine for constraint verification."""
 
 import json
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 
 try:
     from z3 import (
         Solver, Bool, Int, Real, BitVec,
-        And, Or, Not, Implies, If, Xor,
-        sat, unsat, unknown,
-        ForAll, Exists,
+        Not,
+        sat, unsat,
     )
     AVAILABLE = True
 except ImportError:

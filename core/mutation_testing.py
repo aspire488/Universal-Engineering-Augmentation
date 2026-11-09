@@ -4,10 +4,8 @@ import ast
 import json
 import subprocess
 import time
-import copy
 from pathlib import Path
-from typing import Dict, List, Optional
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 MUTATION_OPERATORS = [

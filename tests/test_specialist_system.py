@@ -8,9 +8,6 @@ Or:  python tests/test_specialist_system.py
 """
 
 import sys
-import os
-import json
-import time
 import tempfile
 import shutil
 from pathlib import Path
@@ -22,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 def test_specialist_registry():
     """Test specialist registry: register, lookup, deduplicate."""
     from core.specialist_registry import (
-        SpecialistRegistry, SpecialistMeta, SpecialistDomain,
+        SpecialistRegistry, SpecialistDomain,
         SpecialistCapability, register_builtins,
     )
 
@@ -65,7 +62,7 @@ def test_specialist_registry():
 def test_specialist_router():
     """Test specialist router: classify, route, verify."""
     from core.specialist_router import (
-        SpecialistRouter, TaskType, TaskComplexity,
+        SpecialistRouter, TaskComplexity,
     )
 
     router = SpecialistRouter()
@@ -214,7 +211,7 @@ def test_provenance():
     from core.event_log import init_db
     init_db()
     from core.provenance import (
-        ProvenanceTracker, EvidenceNode, compute_file_hash, compute_content_hash,
+        ProvenanceTracker, EvidenceNode, compute_content_hash,
     )
 
     tracker = ProvenanceTracker()

@@ -3,8 +3,7 @@
 import uuid
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
-from .worktree_engine import create_worktree, remove_worktree, commit_in_worktree, run_in_worktree
+from .worktree_engine import create_worktree, remove_worktree, run_in_worktree
 from .verification import run_verification
 from .event_log import log_candidate, update_candidate, get_db
 

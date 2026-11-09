@@ -1,6 +1,5 @@
 """Verify all core infrastructure works."""
 import sys
-import os
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -8,12 +7,11 @@ SCRIPT_DIR = Path(__file__).parent
 SAMPLE_FILE = str(SCRIPT_DIR / "sample_target.py")
 PROJECT_ROOT = str(SCRIPT_DIR.parent)
 
-from core.event_log import get_db, init_db, log_event, log_task, complete_task, log_verification, log_candidate, update_candidate, register_skill, record_skill_use, get_project_stats, get_recent_events
+from core.event_log import get_db, init_db, log_event, log_task, complete_task, log_candidate, update_candidate, register_skill, record_skill_use, get_project_stats
 from core.project_detector import detect_project
-from core.verification import run_verification, VerificationResult
+from core.verification import run_verification
 from core.worktree_engine import list_worktrees
-from core.candidate_engine import propose_candidates, evaluate_candidate, select_winner
-from core.tree_sitter_engine import parse_file, find_symbol, extract_imports, batch_parse, AVAILABLE as TS_AVAILABLE
+from core.tree_sitter_engine import parse_file, find_symbol, AVAILABLE as TS_AVAILABLE
 from core.property_testing import run_property_test, AVAILABLE as HYP_AVAILABLE
 from core.mutation_testing import MutantGenerator, apply_mutation
 from core.sat_engine import solve_sat, verify_preconditions, AVAILABLE as Z3_AVAILABLE
