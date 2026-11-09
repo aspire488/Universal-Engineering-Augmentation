@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml"><img src="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/releases"><img src="https://img.shields.io/github/v/release/aspire488/Universal-Engineering-Augmentation?label=release" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/STATUS-public%20alpha%2C%20v0.1.0%20untagged-c58a00?style=flat-square" alt="Status: public alpha, v0.1.0, no tagged release yet">
   <img src="https://img.shields.io/badge/PYTHON-3.10%2B-3976a8?style=flat-square" alt="Python 3.10+">
   <img src="https://img.shields.io/github/license/aspire488/Universal-Engineering-Augmentation?style=flat-square" alt="MIT license">
 </p>
@@ -228,16 +228,16 @@ The reproducible benchmark harness records machine-readable deterministic measur
 - [x] Evidence provenance
 - [x] Reproducible public benchmark harness
 - [x] Dependency update automation
-- [x] Automated tagged release pipeline
+- [x] Automated tagged release pipeline (built; no release has been tagged yet)
 - [x] Claude Code adapter
-- [x] Codex adapter
+- [x] Codex adapter (AGENTS.md instructions plus the CLI; no code hook)
 - [x] Stable JSON verification CLI
 - [ ] Broader language grammars
 - [ ] External open-source contribution track
 
 ## Release process
 
-Releases use `vX.Y.Z` tags. The release workflow verifies that the tag matches `core.__version__`, validates the corresponding `CHANGELOG.md` entry, runs verification and tests, builds distributions, and publishes GitHub release notes from the changelog.
+No release has been tagged yet: v0.1.0 exists in `core.__version__`, `pyproject.toml` and the changelog only. Releases will use `vX.Y.Z` tags. The release workflow verifies that the tag matches `core.__version__`, validates the corresponding `CHANGELOG.md` entry, runs verification and tests, builds distributions, and publishes GitHub release notes from the changelog.
 
 See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md) for the maintainer workflow.
 
