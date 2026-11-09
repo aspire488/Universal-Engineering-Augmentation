@@ -72,7 +72,7 @@ def _default_loader() -> object:
     global _AGENT
     with _LOCK:
         if _AGENT is None:
-            import laya  # noqa: PLC0415 - optional heavy dependency, lazy by contract
+            import laya  # optional heavy dependency, lazy by contract
 
             _AGENT = laya.load(DEFAULT_CHECKPOINT)
     return _AGENT

@@ -18,7 +18,7 @@ def test_add_commutative(a, b):
     assert add(a, b) == add(b, a)
 
 result = run_property_test(test_add_commutative, max_examples=50)
-print(f"\n=== Property test: add commutative ===")
+print("\n=== Property test: add commutative ===")
 print(json.dumps(result.to_dict(), indent=2))
 
 # Test 2: Property test on clamp()
@@ -32,5 +32,5 @@ def test_clamp_in_range(value, lo, hi):
     assert lo <= result <= hi
 
 result2 = run_property_test(test_clamp_in_range, max_examples=50)
-print(f"\n=== Property test: clamp in range ===")
+print("\n=== Property test: clamp in range ===")
 print(json.dumps(result2.to_dict(), indent=2))

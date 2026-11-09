@@ -75,12 +75,12 @@ def apply_winner(winner: dict, target_repo: str) -> bool:
     if not wt_path:
         return False
     
-    ok, out, _ = run_in_worktree(wt_path, f"git diff HEAD > /tmp/candidate.patch")
+    ok, out, _ = run_in_worktree(wt_path, "git diff HEAD > /tmp/candidate.patch")
     if not ok:
         return False
     
     from .worktree_engine import _run
-    ok, out, _ = _run(f'git apply /tmp/candidate.patch', cwd=target_repo)
+    ok, out, _ = _run('git apply /tmp/candidate.patch', cwd=target_repo)
     return ok
 
 

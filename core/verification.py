@@ -146,7 +146,7 @@ def verify_structural(project_root: str, profile: dict = None) -> VerificationRe
     
     if profile and profile.get("event_driven"):
         ok, out, _ = run_command(
-            f'python -c "import ast; [ast.parse(open(f).read()) for f in __import__(\'glob\').glob(\'**/*.py\', recursive=True)]"',
+            'python -c "import ast; [ast.parse(open(f).read()) for f in __import__(\'glob\').glob(\'**/*.py\', recursive=True)]"',
             cwd=project_root, timeout=60
         )
         result.add("ast-parse-all", ok, out[:500])

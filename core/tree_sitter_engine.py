@@ -201,11 +201,7 @@ def get_import_graph(filepath: str) -> dict:
     modules = []
     for imp in imports:
         text = imp["text"]
-        if text.startswith("from "):
-            parts = text.split()
-            if len(parts) >= 2:
-                modules.append(parts[1].split(".")[0])
-        elif text.startswith("import "):
+        if text.startswith("from ") or text.startswith("import "):
             parts = text.split()
             if len(parts) >= 2:
                 modules.append(parts[1].split(".")[0])

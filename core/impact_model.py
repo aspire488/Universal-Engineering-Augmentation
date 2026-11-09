@@ -84,8 +84,7 @@ def build_import_graph(root: Path) -> dict[str, set[str]]:
         try:
             rel = py_file.relative_to(root)
             module_key = str(rel).replace("\\", "/").replace("/", ".").replace(".py", "")
-            if module_key.endswith(".__init__"):
-                module_key = module_key[:-9]
+            module_key = module_key.removesuffix(".__init__")
             imports = find_imports(py_file)
             for imp in imports:
                 graph[module_key].add(imp)
@@ -128,8 +127,7 @@ def analyze_file_impact(file_path: Path, root: Path) -> dict:
     """Analyze impact of changing a file."""
     rel = file_path.relative_to(root) if file_path.is_relative_to(root) else file_path
     module_key = str(rel).replace("\\", "/").replace("/", ".").replace(".py", "")
-    if module_key.endswith(".__init__"):
-        module_key = module_key[:-9]
+    module_key = module_key.removesuffix(".__init__")
     
     imports = find_imports(file_path)
     calls = find_function_calls(file_path)

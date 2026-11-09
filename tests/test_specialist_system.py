@@ -52,7 +52,7 @@ def test_specialist_registry():
         registry.disable("documentation-generation")
         spec = registry.get("documentation-generation")
         assert spec is not None and not spec.enabled
-        print(f"  [PASS] Disable specialist works")
+        print("  [PASS] Disable specialist works")
 
         all_specs = registry.list_all(enabled_only=True)
         assert len(all_specs) == stats["total"] - 1
@@ -73,7 +73,7 @@ def test_specialist_router():
     decision = router.route("Fix a typo in README.md")
     assert decision.complexity in (TaskComplexity.TRIVIAL, TaskComplexity.SIMPLE)
     assert decision.specialist is None, "Simple task should not need specialist"
-    print(f"  [PASS] Simple task -> no specialist")
+    print("  [PASS] Simple task -> no specialist")
 
     decision = router.route(
         "Fix critical security vulnerability in authentication module",
@@ -122,7 +122,7 @@ def test_deterministic_scoring():
     assert result.overall_score == 0.0
     assert result.confidence == 0.0
     assert len(result.warnings) > 0
-    print(f"  [PASS] No metrics -> zero score with warnings")
+    print("  [PASS] No metrics -> zero score with warnings")
 
     scorer.clear()
     for dim in ScoreDimension:
@@ -176,7 +176,7 @@ def test_scale_decision():
     assert decision.level == ScaleLevel.SMALL
     assert decision.recommended_approach == "direct"
     assert decision.max_candidates == 0
-    print(f"  [PASS] Small task -> direct, no candidates")
+    print("  [PASS] Small task -> direct, no candidates")
 
     decision = decider.decide(
         ["src/utils.py", "src/utils_test.py", "src/api.py"],
@@ -200,7 +200,7 @@ def test_scale_decision():
     )
     assert decision.level == ScaleLevel.CRITICAL
     assert decision.verification_tier == "security"
-    print(f"  [PASS] Security task -> critical, verification=security")
+    print("  [PASS] Security task -> critical, verification=security")
 
     decision = decider.decide(
         [f"src/mod{i}.py" for i in range(20)],

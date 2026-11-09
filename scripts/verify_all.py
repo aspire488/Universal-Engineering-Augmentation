@@ -91,7 +91,7 @@ def main():
     try:
         register_skill("test-skill", "test", "test", "Test skill for verification")
         record_skill_use("test-skill", success=True)
-        print(f"[PASS] Skill registration")
+        print("[PASS] Skill registration")
     except Exception as e:
         errors.append(f"Skill registration failed: {e}")
         print(f"[FAIL] Skill registration: {e}")
@@ -108,7 +108,7 @@ def main():
     try:
         log_candidate("test-cand-001", "test", "Test problem", "Test approach")
         update_candidate("test-cand-001", status="evaluated", notes="Dry run")
-        print(f"[PASS] Candidate logging")
+        print("[PASS] Candidate logging")
     except Exception as e:
         errors.append(f"Candidate engine failed: {e}")
         print(f"[FAIL] Candidate engine: {e}")
@@ -203,7 +203,7 @@ def main():
         assert DUCK_AVAILABLE, "duckdb not installed"
         result = get_event_summary()
         assert "summary" in result or "error" in result, "Unexpected result format"
-        print(f"[PASS] DuckDB analytics: query returned")
+        print("[PASS] DuckDB analytics: query returned")
     except Exception as e:
         errors.append(f"DuckDB analytics failed: {e}")
         print(f"[FAIL] DuckDB analytics: {e}")
