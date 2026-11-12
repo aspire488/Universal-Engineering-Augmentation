@@ -30,7 +30,7 @@ dependencies = [
   "tree-sitter-typescript==0.23.2",
   "tree-sitter-json==0.24.8",
   "hypothesis==6.167.1",
-  "z3-solver==5.1.0.0",
+  "z3-solver==5.3.3.0",
   "duckdb==1.5.5",
 ]
 
