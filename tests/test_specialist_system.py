@@ -7,12 +7,9 @@ Run: python -m pytest tests/test_specialist_system.py -v
 Or:  python tests/test_specialist_system.py
 """
 
-import sys
-import os
-import json
-import time
-import tempfile
 import shutil
+import sys
+import tempfile
 from pathlib import Path
 
 # Add parent to path for imports
@@ -22,8 +19,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 def test_specialist_registry():
     """Test specialist registry: register, lookup, deduplicate."""
     from core.specialist_registry import (
-        SpecialistRegistry, SpecialistMeta, SpecialistDomain,
-        SpecialistCapability, register_builtins,
+        SpecialistCapability,
+        SpecialistDomain,
+        SpecialistRegistry,
+        register_builtins,
     )
 
     tmpdir = tempfile.mkdtemp()
@@ -53,7 +52,7 @@ def test_specialist_registry():
         registry.disable("documentation-generation")
         spec = registry.get("documentation-generation")
         assert spec is not None and not spec.enabled
-        print(f"  [PASS] Disable specialist works")
+        print("  [PASS] Disable specialist works")
 
         all_specs = registry.list_all(enabled_only=True)
         assert len(all_specs) == stats["total"] - 1
@@ -65,7 +64,8 @@ def test_specialist_registry():
 def test_specialist_router():
     """Test specialist router: classify, route, verify."""
     from core.specialist_router import (
-        SpecialistRouter, TaskType, TaskComplexity,
+        SpecialistRouter,
+        TaskComplexity,
     )
 
     router = SpecialistRouter()
@@ -73,7 +73,7 @@ def test_specialist_router():
     decision = router.route("Fix a typo in README.md")
     assert decision.complexity in (TaskComplexity.TRIVIAL, TaskComplexity.SIMPLE)
     assert decision.specialist is None, "Simple task should not need specialist"
-    print(f"  [PASS] Simple task -> no specialist")
+    print("  [PASS] Simple task -> no specialist")
 
     decision = router.route(
         "Fix critical security vulnerability in authentication module",
@@ -110,7 +110,9 @@ def test_specialist_router():
 def test_deterministic_scoring():
     """Test deterministic scoring: metrics -> score -> confidence."""
     from core.scoring import (
-        DeterministicScorer, MetricEvidence, ScoreDimension,
+        DeterministicScorer,
+        MetricEvidence,
+        ScoreDimension,
     )
     from core.verification import VerificationResult
 
@@ -120,7 +122,7 @@ def test_deterministic_scoring():
     assert result.overall_score == 0.0
     assert result.confidence == 0.0
     assert len(result.warnings) > 0
-    print(f"  [PASS] No metrics -> zero score with warnings")
+    print("  [PASS] No metrics -> zero score with warnings")
 
     scorer.clear()
     for dim in ScoreDimension:
@@ -174,7 +176,7 @@ def test_scale_decision():
     assert decision.level == ScaleLevel.SMALL
     assert decision.recommended_approach == "direct"
     assert decision.max_candidates == 0
-    print(f"  [PASS] Small task -> direct, no candidates")
+    print("  [PASS] Small task -> direct, no candidates")
 
     decision = decider.decide(
         ["src/utils.py", "src/utils_test.py", "src/api.py"],
@@ -198,7 +200,7 @@ def test_scale_decision():
     )
     assert decision.level == ScaleLevel.CRITICAL
     assert decision.verification_tier == "security"
-    print(f"  [PASS] Security task -> critical, verification=security")
+    print("  [PASS] Security task -> critical, verification=security")
 
     decision = decider.decide(
         [f"src/mod{i}.py" for i in range(20)],
@@ -214,7 +216,9 @@ def test_provenance():
     from core.event_log import init_db
     init_db()
     from core.provenance import (
-        ProvenanceTracker, EvidenceNode, compute_file_hash, compute_content_hash,
+        EvidenceNode,
+        ProvenanceTracker,
+        compute_content_hash,
     )
 
     tracker = ProvenanceTracker()
@@ -261,10 +265,10 @@ def test_full_chain():
     """Test the complete chain: task -> router -> evidence -> specialist -> verification -> provenance."""
     from core.event_log import init_db
     init_db()
-    from core.specialist_router import SpecialistRouter, TaskComplexity
-    from core.scoring import DeterministicScorer, MetricEvidence, ScoreDimension
+    from core.provenance import EvidenceNode, ProvenanceTracker
     from core.scale_decision import ScaleDecider
-    from core.provenance import ProvenanceTracker, EvidenceNode
+    from core.scoring import DeterministicScorer, MetricEvidence, ScoreDimension
+    from core.specialist_router import SpecialistRouter, TaskComplexity
     from core.verification import run_verification
 
     # Step 1: Route the task
@@ -369,7 +373,7 @@ def main():
         try:
             test_fn()
             passed += 1
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # ad-hoc runner: any test failure is reported, not raised
             failed += 1
             errors.append(f"{name}: {e}")
             print(f"  [FAIL] {name}: {e}")

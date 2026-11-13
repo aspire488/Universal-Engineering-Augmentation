@@ -12,10 +12,9 @@ import json
 import os
 import subprocess
 import time
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field, asdict
-from datetime import datetime
+from typing import Any
 
 _ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(os.environ.get("AUGMENTATION_DB", str(_ROOT / "data" / "sqlite" / "augmentation.db")))
@@ -29,11 +28,11 @@ class EvidenceNode:
     passed: bool               # did it pass?
     detail: str                # human-readable detail
     tool_version: str = "1.0"  # version of the tool
-    metrics: Dict[str, Any] = field(default_factory=dict)  # numeric measurements
+    metrics: dict[str, Any] = field(default_factory=dict)  # numeric measurements
     timestamp: float = field(default_factory=time.time)
     duration_ms: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -46,16 +45,16 @@ class ProvenanceRecord:
     git_sha: str                    # git SHA at time of action
     git_branch: str                 # git branch
     timestamp: float                # when the action happened
-    specialist: Optional[str]       # which specialist was involved (if any)
-    specialist_hash: Optional[str]  # hash of specialist definition
+    specialist: str | None       # which specialist was involved (if any)
+    specialist_hash: str | None  # hash of specialist definition
     tool: str                       # primary tool used
-    evidence_chain: List[EvidenceNode] = field(default_factory=list)
+    evidence_chain: list[EvidenceNode] = field(default_factory=list)
     decision: str = ""              # what was decided
     outcome: str = ""               # what actually happened
     verification_level: str = "standard"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["evidence_chain"] = [e.to_dict() for e in self.evidence_chain]
         return d
@@ -78,7 +77,7 @@ def compute_content_hash(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
-def get_git_info(workdir: str = None) -> Dict[str, str]:
+def get_git_info(workdir: str | None = None) -> dict[str, str]:
     """Get current git SHA and branch."""
     workdir = workdir or os.getcwd()
     result = {"sha": "unknown", "branch": "unknown"}
@@ -86,21 +85,21 @@ def get_git_info(workdir: str = None) -> Dict[str, str]:
     try:
         sha = subprocess.run(
             ["git", "rev-parse", "HEAD"],
-            cwd=workdir, capture_output=True, text=True, timeout=5
+            cwd=workdir, capture_output=True, text=True, timeout=5, check=False
         )
         if sha.returncode == 0:
             result["sha"] = sha.stdout.strip()[:12]
-    except Exception:
+    except Exception:  # noqa: BLE001, S110  # best-effort git metadata; fields stay "unknown"
         pass
 
     try:
         branch = subprocess.run(
             ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            cwd=workdir, capture_output=True, text=True, timeout=5
+            cwd=workdir, capture_output=True, text=True, timeout=5, check=False
         )
         if branch.returncode == 0:
             result["branch"] = branch.stdout.strip()
-    except Exception:
+    except Exception:  # noqa: BLE001, S110  # best-effort git metadata; fields stay "unknown"
         pass
 
     return result
@@ -137,12 +136,12 @@ class ProvenanceTracker:
         tracker.commit_record(record)
     """
 
-    def __init__(self, workdir: str = None):
+    def __init__(self, workdir: str | None = None):
         self._workdir = workdir or os.getcwd()
-        self._records: List[ProvenanceRecord] = []
+        self._records: list[ProvenanceRecord] = []
 
     def start_record(self, file_path: str, tool: str = "unknown",
-                     specialist: str = None, specialist_hash: str = None) -> ProvenanceRecord:
+                     specialist: str | None = None, specialist_hash: str | None = None) -> ProvenanceRecord:
         """Start a new provenance record. Call commit_record() when done."""
         git_info = get_git_info(self._workdir)
         abs_path = os.path.abspath(file_path)
@@ -187,7 +186,7 @@ class ProvenanceTracker:
         finally:
             conn.close()
 
-    def get_record(self, record_id: str) -> Optional[ProvenanceRecord]:
+    def get_record(self, record_id: str) -> ProvenanceRecord | None:
         """Retrieve a provenance record by ID."""
         import sqlite3
         conn = sqlite3.connect(str(DB_PATH))
@@ -202,7 +201,7 @@ class ProvenanceTracker:
         finally:
             conn.close()
 
-    def get_records_for_file(self, file_path: str, limit: int = 50) -> List[ProvenanceRecord]:
+    def get_records_for_file(self, file_path: str, limit: int = 50) -> list[ProvenanceRecord]:
         """Get all provenance records for a file."""
         import sqlite3
         conn = sqlite3.connect(str(DB_PATH))
@@ -217,7 +216,7 @@ class ProvenanceTracker:
         finally:
             conn.close()
 
-    def get_records_by_specialist(self, specialist: str, limit: int = 50) -> List[ProvenanceRecord]:
+    def get_records_by_specialist(self, specialist: str, limit: int = 50) -> list[ProvenanceRecord]:
         """Get all provenance records for a specialist."""
         import sqlite3
         conn = sqlite3.connect(str(DB_PATH))
@@ -231,11 +230,11 @@ class ProvenanceTracker:
         finally:
             conn.close()
 
-    def verify_integrity(self, record: ProvenanceRecord) -> Dict[str, Any]:
+    def verify_integrity(self, record: ProvenanceRecord) -> dict[str, Any]:
         """Verify the integrity of a provenance record.
         Checks that the file hash matches current content.
         """
-        result = {"valid": True, "checks": []}
+        result: dict[str, Any] = {"valid": True, "checks": []}
 
         if os.path.exists(record.file_path):
             current_hash = compute_file_hash(record.file_path)
@@ -266,7 +265,7 @@ class ProvenanceTracker:
 
         return result
 
-    def _row_to_record(self, row) -> ProvenanceRecord:
+    def _row_to_record(self, row: Any) -> ProvenanceRecord:
         """Convert a database row to a ProvenanceRecord."""
         evidence_chain = json.loads(row["evidence_chain"]) if row["evidence_chain"] else []
         return ProvenanceRecord(

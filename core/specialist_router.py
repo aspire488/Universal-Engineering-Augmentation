@@ -10,17 +10,17 @@ Specialists only augment when deterministic capability is insufficient.
 No multi-agent fan-out. One specialist at a time. Evidence before reasoning.
 """
 
-import json
-import os
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 from .laya_router import laya_classify
 from .specialist_registry import (
-    SpecialistRegistry, SpecialistMeta, SpecialistDomain,
-    SpecialistCapability, register_builtins,
+    SpecialistDomain,
+    SpecialistMeta,
+    SpecialistRegistry,
+    register_builtins,
 )
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -67,7 +67,7 @@ class DeterministicCapability(Enum):
 
 
 # Mapping: task type → which deterministic capabilities handle it
-TASK_DETERMINISTIC_MAP: Dict[TaskType, List[DeterministicCapability]] = {
+TASK_DETERMINISTIC_MAP: dict[TaskType, list[DeterministicCapability]] = {
     TaskType.BUG_FIX: [
         DeterministicCapability.SYNTAX_CHECK,
         DeterministicCapability.TEST_EXECUTION,
@@ -123,7 +123,7 @@ TASK_DETERMINISTIC_MAP: Dict[TaskType, List[DeterministicCapability]] = {
 }
 
 # Mapping: task type → specialist domains that might help
-TASK_SPECIALIST_MAP: Dict[TaskType, List[SpecialistDomain]] = {
+TASK_SPECIALIST_MAP: dict[TaskType, list[SpecialistDomain]] = {
     TaskType.BUG_FIX: [SpecialistDomain.DEBUGGING],
     TaskType.FEATURE: [SpecialistDomain.BACKEND, SpecialistDomain.FRONTEND],
     TaskType.REFACTOR: [SpecialistDomain.ARCHITECTURE, SpecialistDomain.CODE_QUALITY],
@@ -144,14 +144,14 @@ class RoutingDecision:
     """The router's decision for a task."""
     task_type: TaskType
     complexity: TaskComplexity
-    deterministic_capabilities: List[DeterministicCapability]
-    specialist: Optional[SpecialistMeta]
+    deterministic_capabilities: list[DeterministicCapability]
+    specialist: SpecialistMeta | None
     specialist_reason: str
     verification_level: str
-    exclusions: List[str]
+    exclusions: list[str]
     needs_candidates: bool  # whether to create candidate worktrees
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "task_type": self.task_type.value,
             "complexity": self.complexity.value,
@@ -170,10 +170,10 @@ class DeterministicEvidence:
     tool: DeterministicCapability
     passed: bool
     detail: str
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
     duration_ms: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "tool": self.tool.value,
             "passed": self.passed,
@@ -203,11 +203,11 @@ class SpecialistRouter:
         # decision.deterministic_capabilities lists what to run first
     """
 
-    def __init__(self, registry: SpecialistRegistry = None):
+    def __init__(self, registry: SpecialistRegistry | None = None):
         self._registry = registry or register_builtins()
 
-    def route(self, task_description: str, task_type: TaskType = None,
-              complexity: TaskComplexity = None) -> RoutingDecision:
+    def route(self, task_description: str, task_type: TaskType | None = None,
+              complexity: TaskComplexity | None = None) -> RoutingDecision:
         """Route a task through the deterministic-first pipeline."""
         # Convert strings to enums if needed
         if isinstance(task_type, str):
@@ -313,7 +313,7 @@ class SpecialistRouter:
             return TaskComplexity.CRITICAL
 
     def _needs_specialist(self, task_type: TaskType, complexity: TaskComplexity,
-                          det_caps: List[DeterministicCapability]) -> Tuple[Optional[SpecialistMeta], str]:
+                          det_caps: list[DeterministicCapability]) -> tuple[SpecialistMeta | None, str]:
         """Decide if a specialist is needed. Returns (specialist, reason) or (None, reason)."""
         # Trivial/simple tasks: no specialist needed
         if complexity in (TaskComplexity.TRIVIAL, TaskComplexity.SIMPLE):
@@ -329,9 +329,12 @@ class SpecialistRouter:
         for domain in domains:
             candidates = self._registry.find_by_domain(domain)
             for spec in candidates:
-                if spec.enabled and task_type.value not in spec.excluded_from:
-                    if best is None or len(spec.capabilities) > len(best.capabilities):
-                        best = spec
+                if (
+                    spec.enabled
+                    and task_type.value not in spec.excluded_from
+                    and (best is None or len(spec.capabilities) > len(best.capabilities))
+                ):
+                    best = spec
 
         if best is None:
             return None, "No enabled specialist found for matched domain"
@@ -344,7 +347,7 @@ class SpecialistRouter:
         return best, reason
 
     def _determine_verification_level(self, complexity: TaskComplexity,
-                                       specialist: Optional[SpecialistMeta]) -> str:
+                                       specialist: SpecialistMeta | None) -> str:
         """Determine verification level based on complexity and specialist."""
         if complexity == TaskComplexity.CRITICAL:
             return "full"
@@ -354,9 +357,9 @@ class SpecialistRouter:
             return specialist.verification_level
         return "standard"
 
-    def get_deterministic_plan(self, decision: RoutingDecision) -> List[Dict[str, Any]]:
+    def get_deterministic_plan(self, decision: RoutingDecision) -> list[dict[str, Any]]:
         """Generate a deterministic execution plan from routing decision."""
-        plan = []
+        plan: list[dict[str, Any]] = []
         for cap in decision.deterministic_capabilities:
             plan.append({
                 "capability": cap.value,

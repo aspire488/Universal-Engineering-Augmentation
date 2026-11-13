@@ -4,11 +4,9 @@ import ast
 import json
 import subprocess
 import time
-import copy
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
-from dataclasses import dataclass, field
-
+from typing import Any
 
 MUTATION_OPERATORS = [
     "remove_not",
@@ -45,7 +43,7 @@ class MutantGenerator:
         self.filepath = filepath
         self.lines = source.splitlines(keepends=True)
 
-    def generate_mutants(self, operators: List[str] = None) -> List[Mutation]:
+    def generate_mutants(self, operators: list[str] | None = None) -> list[Mutation]:
         operators = operators or MUTATION_OPERATORS
         mutants = []
         mid = 0
@@ -63,7 +61,10 @@ class MutantGenerator:
                 # Replace 'not x' with 'x'
                 col = node.operand.col_offset
                 end_col = node.end_col_offset
-                mutated_line = orig[:col] + ast.get_source_segment(self.source, node.operand) + orig[end_col:]
+                segment = ast.get_source_segment(self.source, node.operand)
+                if segment is None:
+                    continue
+                mutated_line = orig[:col] + segment + orig[end_col:]
                 mutants.append(Mutation(
                     id=f"mut-{mid}", file=self.filepath, line=line,
                     original=orig.rstrip(), mutated=mutated_line.rstrip(),
@@ -110,11 +111,11 @@ class MutantGenerator:
 
             # Swap binary operators
             if "swap_binary_op" in operators and isinstance(node, ast.BinOp):
-                swap_map = {
+                binop_swaps = {
                     (ast.Add, ast.Sub), (ast.Mult, ast.Div),
                     (ast.LShift, ast.RShift), (ast.BitAnd, ast.BitOr),
                 }
-                for a, b in swap_map:
+                for a, b in binop_swaps:
                     if isinstance(node.op, a):
                         line = node.lineno
                         orig = self.lines[line - 1]
@@ -154,29 +155,29 @@ def apply_mutation(source: str, mutation: Mutation) -> str:
     return "".join(lines)
 
 
-def run_tests(test_command: str, cwd: str, timeout: int = 60) -> tuple:
+def run_tests(test_command: str, cwd: str, timeout: int = 60) -> tuple[bool, str]:
     """Run tests and return (passed, output)."""
     try:
         result = subprocess.run(
             test_command, shell=True, cwd=cwd,
-            capture_output=True, text=True, timeout=timeout,
+            capture_output=True, text=True, timeout=timeout, check=False,
         )
         output = result.stdout + result.stderr
         passed = result.returncode == 0
         return passed, output
     except subprocess.TimeoutExpired:
         return False, "TIMEOUT"
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: runner failure is reported as a failed test run
         return False, str(e)
 
 
 def run_mutation_testing(
     filepath: str,
     test_command: str,
-    cwd: str = None,
+    cwd: str | None = None,
     max_mutants: int = 20,
     timeout: int = 60,
-) -> Dict:
+) -> dict[str, Any]:
     """Run mutation testing on a file."""
     source = Path(filepath).read_text(encoding="utf-8")
     generator = MutantGenerator(source, filepath)
@@ -204,7 +205,7 @@ def run_mutation_testing(
 
         # Run tests on mutated file
         mut_test_cmd = test_command.replace(str(Path(filepath).name), str(mut_file.name))
-        test_pass, test_out = run_tests(mut_test_cmd, cwd, timeout)
+        test_pass, _ = run_tests(mut_test_cmd, cwd, timeout)
 
         elapsed = int((time.time() - mut_start) * 1000)
 
@@ -226,14 +227,14 @@ def run_mutation_testing(
             mut_file.unlink()
 
     total = len(results)
-    killed = sum(1 for r in results if r["killed"])
-    survived = total - killed
-    score = (killed / total * 100) if total > 0 else 0
+    killed_count = sum(1 for r in results if r["killed"])
+    survived = total - killed_count
+    score = (killed_count / total * 100) if total > 0 else 0
 
     return {
         "file": filepath,
         "total_mutants": total,
-        "killed": killed,
+        "killed": killed_count,
         "survived": survived,
         "mutation_score": round(score, 1),
         "duration_ms": int((time.time() - start) * 1000),
@@ -242,11 +243,11 @@ def run_mutation_testing(
 
 
 def batch_mutation_test(
-    filepaths: List[str],
+    filepaths: list[str],
     test_command: str,
-    cwd: str = None,
+    cwd: str | None = None,
     max_mutants: int = 10,
-) -> Dict:
+) -> dict[str, Any]:
     """Run mutation testing across multiple files."""
     all_results = []
     total_killed = 0
@@ -270,7 +271,7 @@ def batch_mutation_test(
     }
 
 
-def _op_to_str(op_type) -> str:
+def _op_to_str(op_type: type[ast.cmpop]) -> str:
     map_ = {
         ast.Lt: "<", ast.Gt: ">", ast.LtE: "<=", ast.GtE: ">=",
         ast.Eq: "==", ast.NotEq: "!=",
@@ -278,7 +279,7 @@ def _op_to_str(op_type) -> str:
     return map_.get(op_type, "==")
 
 
-def _binop_to_str(op) -> str:
+def _binop_to_str(op: type[ast.operator]) -> str:
     map_ = {
         ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Div: "/",
         ast.LShift: "<<", ast.RShift: ">>",

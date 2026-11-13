@@ -1,15 +1,19 @@
 """Z3 SAT/SMT solver engine for constraint verification."""
 
 import json
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
+from typing import Any
 
 try:
     from z3 import (
-        Solver, Bool, Int, Real, BitVec,
-        And, Or, Not, Implies, If, Xor,
-        sat, unsat, unknown,
-        ForAll, Exists,
+        BitVec,
+        Bool,
+        Int,
+        Not,
+        Real,
+        Solver,
+        sat,
+        unsat,
     )
     AVAILABLE = True
 except ImportError:
@@ -19,11 +23,11 @@ except ImportError:
 @dataclass
 class SolverResult:
     satisfiable: str  # "sat", "unsat", "unknown"
-    model: Dict = field(default_factory=dict)
+    model: dict[str, Any] = field(default_factory=dict)
     assertions_count: int = 0
     solver_time_ms: int = 0
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "satisfiable": self.satisfiable,
             "model": self.model,
@@ -32,7 +36,7 @@ class SolverResult:
         }
 
 
-def solve_sat(constraints: List[str], variables: Dict[str, str] = None) -> SolverResult:
+def solve_sat(constraints: list[str], variables: dict[str, str] | None = None) -> SolverResult:
     """Solve a SAT problem from constraint strings.
 
     Args:
@@ -66,7 +70,7 @@ def solve_sat(constraints: List[str], variables: Dict[str, str] = None) -> Solve
         try:
             expr = eval(c, {"__builtins__": {}}, ctx)
             s.add(expr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # eval of user constraint may raise anything; reported or skipped
             return SolverResult(
                 satisfiable="unknown",
                 model={"error": f"Constraint parse error: {c} -> {e}"},
@@ -90,10 +94,10 @@ def solve_sat(constraints: List[str], variables: Dict[str, str] = None) -> Solve
 
 
 def verify_preconditions(
-    pre: List[str],
-    post: List[str],
-    variables: Dict[str, str] = None,
-) -> Dict:
+    pre: list[str],
+    post: list[str],
+    variables: dict[str, str] | None = None,
+) -> dict[str, Any]:
     """Verify that preconditions imply postconditions.
 
     Checks: pre => post is valid (i.e., no case where pre is true but post is false).
@@ -120,7 +124,7 @@ def verify_preconditions(
             expr = eval(c, {"__builtins__": {}}, ctx)
             pre_exprs.append(expr)
             s.add(expr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # eval of user constraint may raise anything; reported or skipped
             return {"error": f"Precondition parse error: {c} -> {e}"}
 
     # Negate postconditions (find counterexample)
@@ -128,7 +132,7 @@ def verify_preconditions(
         try:
             expr = eval(c, {"__builtins__": {}}, ctx)
             s.add(Not(expr))
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # eval of user constraint may raise anything; reported or skipped
             return {"error": f"Postcondition parse error: {c} -> {e}"}
 
     result = s.check()
@@ -149,10 +153,10 @@ def verify_preconditions(
 
 
 def find_satisfying_assignment(
-    variables: Dict[str, str],
-    constraints: List[str],
-    optimize: str = None,
-) -> Dict:
+    variables: dict[str, str],
+    constraints: list[str],
+    optimize: str | None = None,
+) -> dict[str, Any]:
     """Find a satisfying assignment, optionally optimizing a variable."""
     import time
     start = time.time()
@@ -175,7 +179,7 @@ def find_satisfying_assignment(
         try:
             expr = eval(c, {"__builtins__": {}}, ctx)
             s.add(expr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # eval of user constraint may raise anything; reported or skipped
             return {"error": f"Constraint parse error: {c} -> {e}"}
 
     if optimize and optimize.startswith("min:"):
@@ -186,7 +190,7 @@ def find_satisfying_assignment(
             try:
                 expr = eval(c, {"__builtins__": {}}, ctx)
                 opt.add(expr)
-            except:
+            except Exception:  # noqa: BLE001, S110  # eval of user constraint may raise anything; reported or skipped
                 pass
         if var_name in ctx:
             opt.minimize(ctx[var_name])

@@ -1,9 +1,7 @@
 """Sample Python file for verifying augmentation tools work."""
 
-import os
 import json
 from pathlib import Path
-from typing import List, Dict, Optional
 
 
 def run_bot(config: dict, verbose: bool = False) -> dict:
@@ -21,7 +19,7 @@ def cmd_help(args: list) -> str:
 class BotManager:
     """Manages bot lifecycle."""
     
-    def __init__(self, name: str, root: Path = None):
+    def __init__(self, name: str, root: Path | None = None):
         self.name = name
         self.root = root or Path.cwd()
         self.running = False
@@ -38,14 +36,14 @@ class BotManager:
         return {"name": self.name, "running": self.running}
 
 
-def process_event(event: dict) -> Optional[dict]:
+def process_event(event: dict) -> dict | None:
     """Process an incoming event."""
     if not event or "type" not in event:
         return None
     return {"handled": True, "type": event["type"]}
 
 
-def validate_config(config: dict) -> List[str]:
+def validate_config(config: dict) -> list[str]:
     """Validate configuration, return list of errors."""
     errors = []
     if "name" not in config:

@@ -15,11 +15,10 @@ is harness-specific and lives in adapters/.
 """
 
 import json
-import os
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from enum import Enum
+from pathlib import Path
+from typing import Any, ClassVar
 
 _ROOT = Path(__file__).resolve().parent.parent
 
@@ -47,7 +46,7 @@ class MetricEvidence:
     weight: float = 1.0   # importance weight
     detail: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["dimension"] = self.dimension.value
         return d
@@ -58,12 +57,12 @@ class ScoreResult:
     """Complete scoring result with evidence chain."""
     overall_score: float           # 0.0 to 1.0
     confidence: float              # 0.0 to 1.0 (how confident are we)
-    dimension_scores: Dict[str, float]  # per-dimension scores
-    metrics: List[MetricEvidence]  # all collected metrics
-    warnings: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    dimension_scores: dict[str, float]  # per-dimension scores
+    metrics: list[MetricEvidence]  # all collected metrics
+    warnings: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "overall_score": self.overall_score,
             "confidence": self.confidence,
@@ -100,7 +99,7 @@ class DeterministicScorer:
     """
 
     # Default dimension weights
-    DEFAULT_WEIGHTS: Dict[ScoreDimension, float] = {
+    DEFAULT_WEIGHTS: ClassVar[dict[ScoreDimension, float]] = {
         ScoreDimension.CORRECTNESS: 3.0,
         ScoreDimension.MAINTAINABILITY: 2.0,
         ScoreDimension.SECURITY: 2.5,
@@ -111,19 +110,19 @@ class DeterministicScorer:
         ScoreDimension.DOCUMENTATION: 1.0,
     }
 
-    def __init__(self, weights: Dict[ScoreDimension, float] = None):
+    def __init__(self, weights: dict[ScoreDimension, float] | None = None):
         self._weights = weights or self.DEFAULT_WEIGHTS.copy()
-        self._metrics: List[MetricEvidence] = []
+        self._metrics: list[MetricEvidence] = []
 
-    def add_metric(self, metric: MetricEvidence):
+    def add_metric(self, metric: MetricEvidence) -> None:
         """Add a metric evidence point."""
         self._metrics.append(metric)
 
-    def add_metrics(self, metrics: List[MetricEvidence]):
+    def add_metrics(self, metrics: list[MetricEvidence]) -> None:
         """Add multiple metric evidence points."""
         self._metrics.extend(metrics)
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all collected metrics."""
         self._metrics.clear()
 
@@ -147,7 +146,7 @@ class DeterministicScorer:
             )
 
         # Group by dimension
-        by_dimension: Dict[ScoreDimension, List[MetricEvidence]] = {}
+        by_dimension: dict[ScoreDimension, list[MetricEvidence]] = {}
         for m in self._metrics:
             by_dimension.setdefault(m.dimension, []).append(m)
 
@@ -164,8 +163,8 @@ class DeterministicScorer:
         # Calculate overall score (weighted average)
         total_weight = 0.0
         weighted_sum = 0.0
-        for dim, score in dimension_scores.items():
-            dim_enum = ScoreDimension(dim)
+        for dim_name, score in dimension_scores.items():
+            dim_enum = ScoreDimension(dim_name)
             w = self._weights.get(dim_enum, 1.0)
             weighted_sum += score * w
             total_weight += w
@@ -175,18 +174,18 @@ class DeterministicScorer:
         # Calculate confidence based on evidence density
         # More evidence = higher confidence, but diminishing returns
         evidence_count = len(self._metrics)
-        unique_tools = len(set(m.source for m in self._metrics))
+        unique_tools = len({m.source for m in self._metrics})
         confidence = min(1.0, (evidence_count * 0.1 + unique_tools * 0.15))
 
         # Identify warnings
         warnings = []
         recommendations = []
-        for dim, score in dimension_scores.items():
+        for dim_name, score in dimension_scores.items():
             if score < 0.5:
-                warnings.append(f"{dim}: score {score:.2f} is below 0.5 threshold")
-                recommendations.append(f"Improve {dim} — currently at {score:.2f}")
+                warnings.append(f"{dim_name}: score {score:.2f} is below 0.5 threshold")
+                recommendations.append(f"Improve {dim_name} — currently at {score:.2f}")
             elif score < 0.7:
-                warnings.append(f"{dim}: score {score:.2f} could be improved")
+                warnings.append(f"{dim_name}: score {score:.2f} could be improved")
 
         if confidence < 0.3:
             warnings.append(f"Low confidence ({confidence:.2f}) — need more evidence sources")
@@ -200,7 +199,7 @@ class DeterministicScorer:
             recommendations=recommendations,
         )
 
-    def score_from_verification(self, verification_result) -> ScoreResult:
+    def score_from_verification(self, verification_result: Any) -> ScoreResult:
         """Score from a verification.py VerificationResult."""
         self.clear()
         if verification_result.passed + verification_result.failed == 0:
@@ -235,7 +234,7 @@ class DeterministicScorer:
 
         return self.calculate()
 
-    def score_from_test_results(self, test_output: Dict[str, Any]) -> ScoreResult:
+    def score_from_test_results(self, test_output: dict[str, Any]) -> ScoreResult:
         """Score from test results dict with passed/failed/skipped counts."""
         self.clear()
         passed = test_output.get("passed", 0)
@@ -273,13 +272,12 @@ class DeterministicScorer:
 
         return self.calculate()
 
-    def score_from_complexity(self, complexity_data: Dict[str, Any]) -> ScoreResult:
+    def score_from_complexity(self, complexity_data: dict[str, Any]) -> ScoreResult:
         """Score from complexity analysis data."""
         self.clear()
 
         # Cyclomatic complexity
         avg_complexity = complexity_data.get("avg_cyclomatic", 1.0)
-        max_complexity = complexity_data.get("max_cyclomatic", 1.0)
         # Normalize: 1-10 is good, 10-20 is ok, 20+ is bad
         complexity_score = max(0, min(1.0, 1.0 - (avg_complexity - 1) / 19))
 

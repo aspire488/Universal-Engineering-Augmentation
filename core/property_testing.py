@@ -1,14 +1,14 @@
 """Property-based testing engine using Hypothesis."""
 
-import json
 import importlib.util
-import sys
-from pathlib import Path
-from typing import Dict, List, Optional, Callable
+import json
+from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 try:
-    from hypothesis import given, strategies as st, settings, HealthCheck
+    import hypothesis  # noqa: F401  # availability probe only; the generated test source imports what it needs
     AVAILABLE = True
 except ImportError:
     AVAILABLE = False
@@ -23,7 +23,7 @@ class PropertyResult:
     duration_ms: int = 0
     error: str = ""
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "test_name": self.test_name,
             "passed": self.passed,
@@ -35,7 +35,7 @@ class PropertyResult:
 
 
 def run_property_test(
-    test_func: Callable,
+    test_func: Callable[..., Any],
     max_examples: int = 100,
     deadline: int = 500,
 ) -> PropertyResult:
@@ -72,7 +72,7 @@ def run_property_test(
             duration_ms=elapsed,
             error=str(e)[:500],
         )
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # user-supplied property/module may raise anything; reported in result
         elapsed = int((time.time() - start) * 1000)
         return PropertyResult(
             test_name=test_func.__name__,
@@ -82,13 +82,15 @@ def run_property_test(
         )
 
 
-def run_property_file(filepath: str, max_examples: int = 50) -> Dict:
+def run_property_file(filepath: str, max_examples: int = 50) -> dict[str, Any]:
     """Run all property tests in a file (functions starting with test_)."""
     spec = importlib.util.spec_from_file_location("test_module", filepath)
+    if spec is None or spec.loader is None:
+        return {"error": f"Failed to load {filepath}: no import spec"}
     module = importlib.util.module_from_spec(spec)
     try:
         spec.loader.exec_module(module)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # user-supplied property/module may raise anything; reported in result
         return {"error": f"Failed to load {filepath}: {e}"}
 
     results = []
@@ -149,7 +151,7 @@ def test_{func_name}_deterministic(value):
 '''
 
 
-def batch_property_test(filepaths: List[str], max_examples: int = 30) -> Dict:
+def batch_property_test(filepaths: list[str], max_examples: int = 30) -> dict[str, Any]:
     """Run property tests across multiple files."""
     total_passed = 0
     total_failed = 0

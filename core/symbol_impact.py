@@ -1,14 +1,13 @@
 """Symbol Impact Model - Track impact at class/function level."""
 
-import os
-import re
 import json
-from pathlib import Path
-from typing import Dict, List, Set, Optional
+import re
 from collections import defaultdict
+from pathlib import Path
+from typing import Any
 
 
-def find_references(symbol: str, root: Path) -> List[Dict]:
+def find_references(symbol: str, root: Path) -> list[dict[str, Any]]:
     """Find all references to a symbol across the codebase."""
     references = []
     
@@ -31,13 +30,13 @@ def find_references(symbol: str, root: Path) -> List[Dict]:
                         "line": i,
                         "content": stripped[:100],
                     })
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return references
 
 
-def find_class_definitions(root: Path) -> Dict[str, str]:
+def find_class_definitions(root: Path) -> dict[str, str]:
     """Find all class definitions and their file locations."""
     classes = {}
     
@@ -48,13 +47,13 @@ def find_class_definitions(root: Path) -> Dict[str, str]:
             content = py_file.read_text(encoding="utf-8", errors="ignore")
             for m in re.finditer(r'^class\s+(\w+)', content, re.MULTILINE):
                 classes[m.group(1)] = str(py_file.relative_to(root))
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return classes
 
 
-def find_function_definitions(root: Path) -> Dict[str, str]:
+def find_function_definitions(root: Path) -> dict[str, str]:
     """Find all function definitions and their file locations."""
     functions = {}
     
@@ -65,13 +64,13 @@ def find_function_definitions(root: Path) -> Dict[str, str]:
             content = py_file.read_text(encoding="utf-8", errors="ignore")
             for m in re.finditer(r'^def\s+(\w+)', content, re.MULTILINE):
                 functions[m.group(1)] = str(py_file.relative_to(root))
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return functions
 
 
-def analyze_event_emitters(root: Path) -> Dict[str, List[Dict]]:
+def analyze_event_emitters(root: Path) -> dict[str, list[dict[str, Any]]]:
     """Analyze all emit_runtime_trace() calls and their event types."""
     emitters = defaultdict(list)
     
@@ -89,13 +88,13 @@ def analyze_event_emitters(root: Path) -> Dict[str, List[Dict]]:
                             "file": str(py_file.relative_to(root)),
                             "line": i,
                         })
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return dict(emitters)
 
 
-def analyze_test_coverage(root: Path) -> Dict[str, List[str]]:
+def analyze_test_coverage(root: Path) -> dict[str, list[str]]:
     """Map test files to the modules they test."""
     coverage = defaultdict(list)
     
@@ -116,13 +115,13 @@ def analyze_test_coverage(root: Path) -> Dict[str, List[str]]:
             for module_name in ["pipeline", "runtime", "config", "context_manager", "command_router"]:
                 if module_name in content:
                     coverage[module_name].append(str(test_file.relative_to(root)))
-        except Exception:
+        except (OSError, ValueError):
             pass
     
     return dict(coverage)
 
 
-def generate_comprehensive_report(root: Path) -> Dict:
+def generate_comprehensive_report(root: Path) -> dict[str, Any]:
     """Generate a comprehensive impact and regression report for a project."""
     classes = find_class_definitions(root)
     functions = find_function_definitions(root)
@@ -138,7 +137,7 @@ def generate_comprehensive_report(root: Path) -> Dict:
             rel = py_file.relative_to(root)
             module = str(rel).replace("\\", "/").replace("/", ".").replace(".py", "")
             all_modules.add(module)
-        except Exception:
+        except ValueError:
             pass
     
     tested_modules = set(test_coverage.keys())
