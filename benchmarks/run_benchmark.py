@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import platform
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -29,6 +30,56 @@ def benchmark_tree_sitter():
     target = ROOT / "scripts" / "sample_target.py"
     parsed = parse_file(str(target))
     return {"functions": len(parsed.get("functions", [])), "imports": len(parsed.get("imports", []))}
+
+
+def benchmark_go_rust():
+    """Benchmark structural extraction for the newly supported Go and Rust grammars."""
+    from core.tree_sitter_engine import parse_file
+
+    fixtures = {
+        "sample.go": '''package main
+
+import "fmt"
+
+type Counter struct { value int }
+
+func (c *Counter) Increment() {
+    c.value++
+    fmt.Println(c.value)
+}
+''',
+        "sample.rs": '''use std::fmt;
+
+struct Counter { value: i32 }
+
+enum Mode { Fast, Slow }
+
+trait Incrementable {
+    fn increment(&mut self);
+}
+
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+''',
+    }
+    results = {}
+    with tempfile.TemporaryDirectory(prefix="uea-benchmark-") as tmpdir:
+        for filename, source in fixtures.items():
+            target = Path(tmpdir) / filename
+            target.write_text(source, encoding="utf-8")
+            parsed = parse_file(str(target))
+            if "error" in parsed:
+                raise RuntimeError(
+                    f"Could not parse benchmark fixture {filename}: {parsed['error']}"
+                )
+            results[Path(filename).suffix.lstrip(".")] = {
+                "functions": len(parsed.get("functions", [])),
+                "types": len(parsed.get("classes", [])),
+                "imports": len(parsed.get("imports", [])),
+                "nodes": parsed.get("node_count", 0),
+            }
+    return results
 
 
 def benchmark_z3():
@@ -64,7 +115,8 @@ def benchmark_verification():
 
 def main():
     benchmarks = [
-        ("tree_sitter", benchmark_tree_sitter),
+        ("tree_sitter_python", benchmark_tree_sitter),
+        ("tree_sitter_go_rust", benchmark_go_rust),
         ("z3_pre_post", benchmark_z3),
         ("hypothesis", benchmark_property_testing),
         ("verification", benchmark_verification),
