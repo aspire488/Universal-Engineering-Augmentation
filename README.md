@@ -1,18 +1,40 @@
-# Universal Engineering Augmentation
+<p align="center"><img src="assets/brand/readme-hero.svg" width="100%" alt="Universal Engineering Augmentation — Turn agent output into evidence you can verify."/></p>
 
 <p align="center">
   <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml"><img src="https://github.com/aspire488/Universal-Engineering-Augmentation/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/aspire488/Universal-Engineering-Augmentation/releases"><img src="https://img.shields.io/github/v/release/aspire488/Universal-Engineering-Augmentation" alt="Latest Release"></a>
-  <img src="https://img.shields.io/badge/version-0.1.0-blue" alt="Version 0.1.0">
-  <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+"></a>
-  <img src="https://img.shields.io/github/license/aspire488/Universal-Engineering-Augmentation" alt="MIT License">
-  <img src="https://img.shields.io/github/issues/aspire488/Universal-Engineering-Augmentation" alt="Issues">
-  <img src="https://img.shields.io/github/issues-pr/aspire488/Universal-Engineering-Augmentation" alt="Pull Requests">
+  <img src="https://img.shields.io/badge/STATUS-public%20alpha%2C%20v0.1.0%20untagged-c58a00?style=flat-square" alt="Status: public alpha, v0.1.0, no tagged release yet">
+  <img src="https://img.shields.io/badge/PYTHON-3.10%2B-3976a8?style=flat-square" alt="Python 3.10+">
+  <img src="https://img.shields.io/github/license/aspire488/Universal-Engineering-Augmentation?style=flat-square" alt="MIT license">
 </p>
 
-**Status:** Public alpha · v0.1.0 · deterministic-first routing + optional Laya System-1 integrated
+# Universal Engineering Augmentation
 
-A **tool-agnostic engineering augmentation layer for coding agents**. It moves repeatable software-engineering work from probabilistic LLM reasoning into deterministic analysis, testing, verification, routing, and evidence systems.
+**A deterministic engineering layer for coding agents.**
+
+UEA moves repeatable software-engineering work out of probabilistic reasoning and into tools that can inspect, verify, measure, and preserve evidence. It works beside OpenCode, Claude Code, Codex, and other agents without binding the core to one host.
+
+<blockquote>
+  Agents propose. Deterministic systems verify. Evidence records what actually happened.
+</blockquote>
+
+## Capability map
+
+| Engineering capability | What UEA establishes |
+|---|---|
+| Code intelligence | Tree-sitter structure, symbols, and parsing |
+| Impact analysis | Dependency graphs, affected symbols, blast radius |
+| Verification | Tiered checks from minimal through security and full |
+| Test quality | Property exploration and mutation testing |
+| Formal methods | SAT/SMT constraints through Z3 |
+| Candidate isolation | Parallel implementations in Git worktrees |
+| Routing | Deterministic-first specialist selection |
+| Evidence | Provenance, event records, and reproducible results |
+| Analytics | DuckDB queries over engineering events |
+| Integration | Agent adapters and stable JSON CLI |
+
+**Project status:** Public alpha · v0.1.0 · deterministic-first routing with optional Laya System-1 fallback.
+
+---
 
 ## Why this exists
 
@@ -35,6 +57,8 @@ Universal Engineering Augmentation provides reusable engineering capabilities th
 - **Event logging** — structured SQLite records
 - **Analytics** — DuckDB queries over engineering events
 - **Project detection** — select capability profiles from repository structure
+- **Agent adapters** — Claude Code and Codex integration surfaces
+- **Stable CLI** — `uea-verify` JSON evidence interface
 
 ### Structural language capability matrix
 
@@ -146,9 +170,11 @@ The core package contains no dependency on a specific coding agent.
 
 **Reference integration:** OpenCode
 
-**Planned first-class adapters:** Claude Code · Codex
+**First-class integration surfaces:** Claude Code · Codex · generic CLI
 
-The augmentation layer can also be exposed through MCP, CLI/API, filesystem interfaces, or other adapter mechanisms.
+Adapters live outside `core/`. They translate host-agent lifecycle/configuration into deterministic UEA calls and structured evidence.
+
+See [`docs/ADAPTER_INTEGRATION.md`](docs/ADAPTER_INTEGRATION.md) and [`docs/ADAPTER_CLI_GUIDE.md`](docs/ADAPTER_CLI_GUIDE.md).
 
 ## Installation
 
@@ -169,7 +195,13 @@ from core.verification import run_verification
 
 result = parse_file("my_script.py")
 graph = build_import_graph("src/")
-report = run_verification(level="standard")
+report = run_verification(".", level="standard")
+```
+
+For agent integrations or CI, use the stable JSON CLI:
+
+```bash
+uea-verify . --level standard
 ```
 
 ## Verification
@@ -209,14 +241,16 @@ The reproducible benchmark harness records machine-readable deterministic measur
 - [x] Evidence provenance
 - [x] Reproducible public benchmark harness
 - [x] Dependency update automation
-- [x] Automated tagged release pipeline
-- [ ] First-class Claude Code adapter
-- [ ] First-class Codex adapter
+- [x] Automated tagged release pipeline (built; no release has been tagged yet)
+- [x] Claude Code adapter
+- [x] Codex adapter (AGENTS.md instructions plus the CLI; no code hook)
+- [x] Stable JSON verification CLI
 - [ ] Broader language grammars
+- [ ] External open-source contribution track
 
 ## Release process
 
-Releases use `vX.Y.Z` tags. The release workflow verifies that the tag matches `core.__version__`, validates the corresponding `CHANGELOG.md` entry, runs verification and tests, builds distributions, and publishes GitHub release notes from the changelog.
+No release has been tagged yet: v0.1.0 exists in `core.__version__`, `pyproject.toml` and the changelog only. Releases will use `vX.Y.Z` tags. The release workflow verifies that the tag matches `core.__version__`, validates the corresponding `CHANGELOG.md` entry, runs verification and tests, builds distributions, and publishes GitHub release notes from the changelog.
 
 See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md) for the maintainer workflow.
 

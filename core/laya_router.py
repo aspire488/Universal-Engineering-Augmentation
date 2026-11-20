@@ -31,6 +31,7 @@ from __future__ import annotations
 import os
 import threading
 from collections.abc import Callable, Sequence
+from typing import Any
 
 #: The single checkpoint this module is allowed to load.
 DEFAULT_CHECKPOINT = "convaiinnovations/laya"
@@ -40,7 +41,7 @@ _INSTRUCTIONS = (
     "Choose exactly one label from the provided criteria."
 )
 
-_Loader = Callable[[], object]
+_Loader = Callable[[], Any]
 
 _LOCK = threading.Lock()
 _AGENT: object | None = None
@@ -67,12 +68,12 @@ def reset_cache() -> None:
         _AGENT = None
 
 
-def _default_loader() -> object:
+def _default_loader() -> Any:
     """Import Laya and load exactly one checkpoint, lazily and once."""
     global _AGENT
     with _LOCK:
         if _AGENT is None:
-            import laya  # noqa: PLC0415 - optional heavy dependency, lazy by contract
+            import laya  # optional heavy dependency, lazy by contract
 
             _AGENT = laya.load(DEFAULT_CHECKPOINT)
     return _AGENT
@@ -99,7 +100,7 @@ def laya_classify(
 
     try:
         agent = (loader or _default_loader)()
-        result = agent.predict(  # type: ignore[union-attr]
+        result = agent.predict(
             text,
             {
                 "task": {
@@ -111,7 +112,7 @@ def laya_classify(
         )
         answer = result["answers"]["task"]
         label = str(answer["choice"])
-    except Exception:
+    except Exception:  # noqa: BLE001  # optional classifier must never break routing; caller falls back
         return None
 
     return label if label in allowed else None

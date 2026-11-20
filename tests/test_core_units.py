@@ -3,10 +3,10 @@
 Run: pytest tests/ -v
 """
 
-import sys
-import os
-import tempfile
+import importlib
 import shutil
+import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -114,12 +114,12 @@ class TestEventLog:
     """Tests for core.event_log module."""
 
     def test_init_db(self):
-        from core.event_log import init_db, DB_PATH
+        from core.event_log import DB_PATH, init_db
         init_db()
         assert DB_PATH.exists()
 
     def test_log_event(self):
-        from core.event_log import init_db, log_event, get_recent_events
+        from core.event_log import get_recent_events, init_db, log_event
         init_db()
         with log_event("test_event", project="test-project", detail="unit test") as event_id:
             assert event_id is not None
@@ -127,14 +127,14 @@ class TestEventLog:
         assert len(events) > 0
 
     def test_log_task(self):
-        from core.event_log import init_db, log_task, complete_task
+        from core.event_log import complete_task, init_db, log_task
         init_db()
         task_id = log_task("test", "test-project", "Unit test task")
         assert task_id is not None
         complete_task(task_id, result="pass", files_changed="0", risk_level="low")
 
     def test_get_project_stats(self):
-        from core.event_log import init_db, log_event, get_project_stats
+        from core.event_log import get_project_stats, init_db, log_event
         init_db()
         with log_event("stats_test", project="stats-project"):
             pass
@@ -181,14 +181,14 @@ class TestSATEngine:
         assert d["assertions_count"] == 2
 
     def test_solve_sat_simple(self):
-        from core.sat_engine import solve_sat, AVAILABLE
+        from core.sat_engine import AVAILABLE, solve_sat
         if not AVAILABLE:
             return
         result = solve_sat(["x > 0", "x < 10"], variables={"x": "int"})
         assert result.satisfiable in ("sat", "unknown")
 
     def test_solve_sat_unsat(self):
-        from core.sat_engine import solve_sat, AVAILABLE
+        from core.sat_engine import AVAILABLE, solve_sat
         if not AVAILABLE:
             return
         result = solve_sat(["x > 10", "x < 5"], variables={"x": "int"})
@@ -246,8 +246,7 @@ class TestSymbolImpact:
     """Tests for core.symbol_impact module."""
 
     def test_import(self):
-        import core.symbol_impact
-        assert True
+        importlib.import_module("core.symbol_impact")
 
 
 class TestScoring:
@@ -357,16 +356,14 @@ class TestAnalytics:
     """Tests for core.analytics module."""
 
     def test_import(self):
-        import core.analytics
-        assert True
+        importlib.import_module("core.analytics")
 
 
 class TestMutationTesting:
     """Tests for core.mutation_testing module."""
 
     def test_import(self):
-        import core.mutation_testing
-        assert True
+        importlib.import_module("core.mutation_testing")
 
 
 class TestVersion:
@@ -381,3 +378,42 @@ class TestVersion:
         parts = __version__.split(".")
         assert len(parts) == 3
         assert all(p.isdigit() for p in parts)
+
+
+class TestSpecialistRegistryDeduplicate:
+    """Regression: deduplicate() used max(..., k=...) and raised TypeError."""
+
+    def test_deduplicate_keeps_most_capable(self, tmp_path):
+        from core.specialist_registry import (
+            SpecialistCapability,
+            SpecialistDomain,
+            SpecialistMeta,
+            SpecialistRegistry,
+        )
+
+        registry = SpecialistRegistry(str(tmp_path))
+        common = {"description": "d", "source": "s", "license": "MIT"}
+        registry.register(SpecialistMeta(
+            name="dup", domain=SpecialistDomain.TESTING,
+            capabilities=[SpecialistCapability.VERIFY], **common))
+        registry.register(SpecialistMeta(
+            name="dup", domain=SpecialistDomain.DEBUGGING,
+            capabilities=[SpecialistCapability.VERIFY, SpecialistCapability.DEBUG], **common))
+
+        assert registry.deduplicate() == 1
+        assert registry.get("dup").domain == SpecialistDomain.DEBUGGING
+
+    def test_bump_version_on_changed_reregistration(self, tmp_path):
+        from core.specialist_registry import (
+            SpecialistCapability,
+            SpecialistDomain,
+            SpecialistMeta,
+            SpecialistRegistry,
+        )
+
+        registry = SpecialistRegistry(str(tmp_path))
+        common = {"domain": SpecialistDomain.TESTING, "source": "s", "license": "MIT",
+                  "capabilities": [SpecialistCapability.VERIFY]}
+        registry.register(SpecialistMeta(name="v", description="one", **common))
+        registry.register(SpecialistMeta(name="v", description="two", **common))
+        assert registry.get("v").version == "1.0.1"

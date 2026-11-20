@@ -2,9 +2,9 @@
 
 import json
 import os
-from pathlib import Path
-from typing import Dict, List, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 try:
     import duckdb
@@ -18,11 +18,11 @@ DB_PATH = Path(os.environ.get("AUGMENTATION_DB", str(_ROOT / "data" / "sqlite" /
 
 @dataclass
 class QueryResult:
-    columns: List[str]
-    rows: List[Dict]
+    columns: list[str]
+    rows: list[dict[str, Any]]
     row_count: int
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "columns": self.columns,
             "rows": self.rows,
@@ -30,7 +30,7 @@ class QueryResult:
         }
 
 
-def query(sql: str, db_path: str = None) -> QueryResult:
+def query(sql: str, db_path: str | None = None) -> QueryResult:
     """Execute a SQL query against the augmentation SQLite DB via DuckDB."""
     if not AVAILABLE:
         return QueryResult(columns=[], rows=[], row_count=0)
@@ -44,7 +44,7 @@ def query(sql: str, db_path: str = None) -> QueryResult:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return QueryResult(columns=columns, rows=rows, row_count=len(rows))
-    except Exception as e:
+    except Exception:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         # Fallback: try direct path
         try:
             conn = duckdb.connect()
@@ -53,11 +53,11 @@ def query(sql: str, db_path: str = None) -> QueryResult:
             rows = [dict(zip(columns, row)) for row in result.fetchall()]
             conn.close()
             return QueryResult(columns=columns, rows=rows, row_count=len(rows))
-        except Exception as e2:
+        except Exception as e2:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
             return QueryResult(columns=[], rows=[{"error": str(e2)}], row_count=0)
 
 
-def get_event_summary(project: str = None) -> Dict:
+def get_event_summary(project: str | None = None) -> dict[str, Any]:
     """Get event summary statistics."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -83,11 +83,11 @@ def get_event_summary(project: str = None) -> Dict:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return {"summary": rows}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         return {"error": str(e)}
 
 
-def get_task_metrics(project: str = None) -> Dict:
+def get_task_metrics(project: str | None = None) -> dict[str, Any]:
     """Get task completion metrics."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -112,11 +112,11 @@ def get_task_metrics(project: str = None) -> Dict:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return {"metrics": rows}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         return {"error": str(e)}
 
 
-def get_verification_trends() -> Dict:
+def get_verification_trends() -> dict[str, Any]:
     """Get verification run trends over time."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -140,11 +140,11 @@ def get_verification_trends() -> Dict:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return {"trends": rows}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         return {"error": str(e)}
 
 
-def execute_custom(sql: str) -> Dict:
+def execute_custom(sql: str) -> dict[str, Any]:
     """Execute arbitrary SQL against the augmentation DB."""
     if not AVAILABLE:
         return {"error": "duckdb not installed"}
@@ -157,7 +157,7 @@ def execute_custom(sql: str) -> Dict:
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
         conn.close()
         return {"columns": columns, "rows": rows, "count": len(rows)}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001  # fail-soft: report DB errors to the caller as data
         return {"error": str(e)}
 
 

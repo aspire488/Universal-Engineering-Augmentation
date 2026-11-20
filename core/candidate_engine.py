@@ -1,15 +1,16 @@
 """Candidate engine - propose, isolate, evaluate, select."""
 
-import uuid
 import json
+import uuid
 from pathlib import Path
-from typing import Dict, List, Optional
-from .worktree_engine import create_worktree, remove_worktree, commit_in_worktree, run_in_worktree
+from typing import Any
+
+from .event_log import get_db, log_candidate, update_candidate
 from .verification import run_verification
-from .event_log import log_candidate, update_candidate, get_db
+from .worktree_engine import create_worktree, remove_worktree, run_in_worktree
 
 
-def propose_candidates(problem: str, approaches: List[str], repo_path: str, base_branch: str = "main") -> List[Dict]:
+def propose_candidates(problem: str, approaches: list[str], repo_path: str, base_branch: str = "main") -> list[dict[str, Any]]:
     """Create candidate worktrees for each approach."""
     candidates = []
     for i, approach in enumerate(approaches):
@@ -26,7 +27,7 @@ def propose_candidates(problem: str, approaches: List[str], repo_path: str, base
     return candidates
 
 
-def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: str = "standard", profile: Dict = None) -> Dict:
+def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: str = "standard", profile: dict[str, Any] | None = None) -> dict[str, Any]:
     """Run verification on a candidate worktree."""
     with get_db() as conn:
         row = conn.execute("SELECT worktree_path FROM candidates WHERE id=?", (candidate_id,)).fetchone()
@@ -46,7 +47,7 @@ def evaluate_candidate(candidate_id: str, repo_path: str, verification_level: st
     return result_dict
 
 
-def select_winner(candidates: List[Dict]) -> Optional[Dict]:
+def select_winner(candidates: list[dict[str, Any]]) -> dict[str, Any] | None:
     """Select the best candidate based on verification results."""
     scored = []
     for c in candidates:
@@ -69,22 +70,22 @@ def select_winner(candidates: List[Dict]) -> Optional[Dict]:
     return winner
 
 
-def apply_winner(winner: Dict, target_repo: str) -> bool:
+def apply_winner(winner: dict[str, Any], target_repo: str) -> bool:
     """Apply the winning candidate to the target repository."""
     wt_path = winner.get("worktree")
     if not wt_path:
         return False
     
-    ok, out, _ = run_in_worktree(wt_path, f"git diff HEAD > /tmp/candidate.patch")
+    ok, _, _ = run_in_worktree(wt_path, "git diff HEAD > /tmp/candidate.patch")
     if not ok:
         return False
     
     from .worktree_engine import _run
-    ok, out, _ = _run(f'git apply /tmp/candidate.patch', cwd=target_repo)
+    ok, _, _ = _run('git apply /tmp/candidate.patch', cwd=target_repo)
     return ok
 
 
-def cleanup_candidates(candidates: List[Dict], repo_path: str):
+def cleanup_candidates(candidates: list[dict[str, Any]], repo_path: str) -> None:
     """Remove all candidate worktrees."""
     for c in candidates:
         if c.get("worktree") and c["id"] not in [c.get("id") for c in candidates if c.get("status") == "winner"]:

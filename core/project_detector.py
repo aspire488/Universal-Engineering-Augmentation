@@ -1,15 +1,15 @@
 """Project detection and capability routing for Universal Engineering Augmentation."""
 
-import os
 import json
+import os
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any
 
 _ROOT = Path(__file__).resolve().parent.parent
 PROFILES_DIR = Path(os.environ.get("AUGMENTATION_PROFILES", str(_ROOT / "profiles")))
 
 
-def detect_project(workdir: str = None) -> Dict[str, Any]:
+def detect_project(workdir: str | None = None) -> dict[str, Any]:
     """Detect project type and load appropriate profile."""
     workdir = workdir or os.getcwd()
     root = _find_git_root(workdir) or workdir
@@ -32,7 +32,7 @@ def detect_project(workdir: str = None) -> Dict[str, Any]:
     return profile
 
 
-def _find_git_root(path: str) -> Optional[str]:
+def _find_git_root(path: str) -> str | None:
     current = Path(path)
     for parent in [current] + list(current.parents):
         if (parent / ".git").exists():
@@ -54,15 +54,16 @@ def _is_aura(root: str) -> bool:
     return Path(root, "aura").is_dir() and Path(root, "aura", "README.md").exists()
 
 
-def _load_profile(profile_name: str) -> Dict[str, Any]:
+def _load_profile(profile_name: str) -> dict[str, Any]:
     profile_path = PROFILES_DIR / f"{profile_name}.json"
     if profile_path.exists():
         with open(profile_path) as f:
-            return json.load(f)
+            profile: dict[str, Any] = json.load(f)
+        return profile
     return _default_profile(profile_name)
 
 
-def _default_profile(profile_name: str) -> Dict[str, Any]:
+def _default_profile(profile_name: str) -> dict[str, Any]:
     profiles = {
         "generic": {
             "verification_level": "standard",
