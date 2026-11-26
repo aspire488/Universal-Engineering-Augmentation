@@ -2,7 +2,7 @@
 # Only packages required by core/ modules
 
 # Tree-sitter parsing engine
-tree-sitter==0.26.0
+tree-sitter==0.26.1
 
 # Tree-sitter language grammars
 tree-sitter-python==0.25.0
